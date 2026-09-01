@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <title>מערכת שיבוץ חדרים</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Hebrew, sans-serif; }
+    body { background-color: #f8fafc; margin: 0; padding: 8px; color: #0f172a; }
+    .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 14px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.06); }
+    h2 { margin-top: 0; text-align: center; font-size: 20px; color: #1e293b; }
+    select, button { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; font-weight: 600; }
+    button { background-color: #2563eb; color: white; border: none; cursor: pointer; transition: background 0.2s; }
+    button:active { transform: scale(0.98); }
+    
+    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
+    .admin-badge { background: #dc2626; color: white; padding: 3px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+    
+    .nav-container { background: #f1f5f9; padding: 10px; border-radius: 10px; margin-bottom: 12px; }
+    .nav-top-row { display: flex; justify-content: space-between; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+    .nav-btn-sm { width: auto; padding: 6px 10px; font-size: 11px; border-radius: 6px; margin: 0; background-color: #e2e8f0; color: #334155; }
+    .nav-btn-sm:hover { background-color: #cbd5e1; }
+    .btn-today { background-color: #0284c7; color: white; font-weight: 700; }
+    .btn-admin-login { background-color: #475569; color: white; font-weight: 700; }
+    
+    .day-tabs { display: flex; gap: 2px; justify-content: space-between; overflow-x: auto; padding-bottom: 4px; margin-bottom: 8px; border-bottom: 2px solid #cbd5e1; }
+    .day-tab { flex: 1; min-width: 55px; text-align: center; padding: 6px 2px; border-radius: 8px 8px 0 0; background: #e2e8f0; color: #475569; font-size: 12px; cursor: pointer; }
+    .day-tab-name { font-weight: 700; display: block; }
+    .day-tab-date { font-size: 10px; opacity: 0.85; }
+    .day-tab.active { background: #2563eb; color: white; font-weight: 700; }
+    
+    .date-title-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+    .date-title { font-weight: 800; font-size: 15px; color: #1e293b; }
+    .day-step-btn { width: auto; padding: 6px 10px; font-size: 11px; margin: 0; background-color: #2563eb; }
+
+    .table-wrapper { 
+      overflow-x: auto; 
+      overflow-y: auto; 
+      max-height: 65vh; 
+      max-width: 100%; 
+      border: 1px solid #cbd5e1; 
+      border-radius: 8px; 
+      background: white;
+    }
+    
+    table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 680px; font-size: 12px; text-align: center; }
+    th, td { border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; padding: 6px 4px; min-width: 90px; height: 50px; vertical-align: middle; }
+    
+    th { font-weight: 800; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1); }
+    
+    th.th-keren, td.td-keren { background-color: #faf5ff; }
+    th.th-keren { background-color: #f3e8ff !important; color: #581c87 !important; border-bottom: 2px solid #a855f7 !important; }
+    
+    th.th-tzfira, td.td-tzfira { background-color: #fffbeef0; }
+    th.th-tzfira { background-color: #fef9c3 !important; color: #713f12 !important; border-bottom: 2px solid #eab308 !important; }
+    
+    th.time-col, td.time-col { 
+      min-width: 55px; width: 55px; font-weight: 800; background-color: #f8fafc !important; 
+      position: sticky; right: 0; z-index: 11; border-left: 2px solid #cbd5e1; color: #0f172a; box-shadow: -2px 0 2px -1px rgba(0,0,0,0.1);
+    }
+    th.time-col { z-index: 15 !important; background-color: #e2e8f0 !important; }
+
+    tr.row-half-hour { height: 26px !important; }
+    tr.row-half-hour td { height: 26px !important; font-size: 11px; }
+
+    .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 14px; font-weight: 800; border: 2px solid #c084fc !important; }
+
+    .name-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+    .badge-keren { background-color: #9333ea; color: #ffffff; }
+    .badge-tzfira { background-color: #d97706; color: #ffffff; }
+    .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
+
+    .cell-free { background-color: #ecfdf5; color: #047857; font-weight: 600; }
+    .cell-unavailable { background-color: #f1f5f9 !important; color: #94a3b8; font-size: 11px; }
+    
+    .btn-action { padding: 4px 8px; font-size: 11px; margin-top: 4px; border-radius: 4px; font-weight: 700; width: auto; }
+    .btn-book { background-color: #10b981; color: white; }
+    .btn-release { background-color: #ef4444; color: white; }
+    #main-app { display: none; }
+    .loader { text-align: center; padding: 30px; color: #64748b; font-size: 16px; }
+    .error-box { text-align: center; padding: 20px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+  <div id="login-screen" class="container" style="max-width:400px;">
+    <h2>מערכת שיבוץ חדרים</h2>
+    <p style="text-align:center; color:#64748b;">בחר את שמך להתחברות:</p>
+    <select id="user-select"><option value="">טוען עובדים...</option></select>
+    <button onclick="saveUser()">היכנס</button>
+  </div>
+
+  <div id="main-app" class="container">
+    <div class="user-header">
+      <div>
+        <span>שלום, <strong id="current-user-name"></strong></span>
+        <span id="admin-indicator" class="admin-badge" style="display:none;">מנהל פעיל 👑</span>
+      </div>
+      <div>
+        <button class="nav-btn-sm btn-admin-login" id="admin-login-btn" onclick="toggleAdminPrompt()">כניסת מנהל 🔒</button>
+        <span style="color:#2563eb; cursor:pointer; font-weight:600; margin-right:8px;" onclick="logout()">החלף משתמש</span>
+      </div>
+    </div>
+
+    <div class="nav-container">
+      <div class="nav-top-row">
+        <button class="nav-btn-sm" onclick="changeMonth(-1)">&laquo; חודש קודם</button>
+        <button class="nav-btn-sm" onclick="changeWeek(-1)">&lsaquo; שבוע קודם</button>
+        <button class="nav-btn-sm btn-today" onclick="resetToToday()">היום</button>
+        <button class="nav-btn-sm" onclick="changeWeek(1)">שבוע הבא &rsaquo;</button>
+        <button class="nav-btn-sm" onclick="changeMonth(1)">חודש הבא &raquo;</button>
+      </div>
+
+      <div id="day-tabs" class="day-tabs"></div>
+
+      <div class="date-title-bar">
+        <button class="day-step-btn" onclick="changeDay(-1)">&rarr; יום קודם</button>
+        <div id="date-display" class="date-title"></div>
+        <button class="day-step-btn" onclick="changeDay(1)">יום הבא &larr;</button>
+      </div>
+    </div>
+
+    <div id="table-container" class="loader">טוען טבלת חדרים...</div>
+  </div>
+
+  <script>
+    // הקישור האישי שלך ל-API של גוגל מוטמע כאן:
+    const API_URL = "https://script.google.com/macros/s/AKfycbxXk0rup0dpP2P4LuKJ1eu9VEUKvKeVOZYaeaVUTCbKO7-TY_cKl4RaAnoVmzvh0bIe1Q/exec"; 
+
+    async function fetchGet(params) {
+      const query = new URLSearchParams(params).toString();
+      const res = await fetch(`${API_URL}?${query}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      return data;
+    }
+
+    async function fetchPost(payload) {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      return data;
+    }
+
+    let currentUser = localStorage.getItem('roomAppUser_v11');
+    let isAdmin = localStorage.getItem('roomAppIsAdmin_v11') === 'true';
+    let currentDate = new Date();
+    const sheetDaysHebrew = ["ראשון", "יום שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+    const tabDaysNames = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
+
+    const defaultUsers = ["איילת דורון", "שמוליק הרשקוביץ", "שלומית קגיה", "קרן ביידץ", "אלמז איינהו", "דנית תבל", "יעל ציק", "מישל מנדלוביץ- יובל", "מריאנה חנין", "אירית מאיר", "ג׳סיקה בון", "שיר מלר", "אילנה לוין", "איתי צוקרמן", "יפעת זיידמן"];
+
+    window.onload = function() {
+      if (currentUser) {
+        showMainApp();
+      } else {
+        fetchGet({ action: 'getEmployees' })
+          .then(data => populateUsers(data.employees))
+          .catch(err => { console.error(err); populateUsers(defaultUsers); });
+      }
+    };
+
+    function populateUsers(users) {
+      let select = document.getElementById('user-select');
+      select.innerHTML = '<option value="">בחר עובד/ת...</option>';
+      let list = (users && users.length > 0) ? users : defaultUsers;
+      list.forEach(u => select.innerHTML += `<option value="${u}">${u}</option>`);
+    }
+
+    function saveUser() {
+      let selected = document.getElementById('user-select').value;
+      if (!selected) return alert("אנא בחר שם מהרשימה");
+      localStorage.setItem('roomAppUser_v11', selected);
+      currentUser = selected;
+      showMainApp();
+    }
+
+    function logout() {
+      localStorage.removeItem('roomAppUser_v11');
+      localStorage.removeItem('roomAppIsAdmin_v11');
+      location.reload();
+    }
+
+    function toggleAdminPrompt() {
+      if (isAdmin) {
+        if (confirm("האם לצאת ממצב מנהל?")) {
+          isAdmin = false;
+          localStorage.setItem('roomAppIsAdmin_v11', 'false');
+          showMainApp();
+        }
+      } else {
+        let pass = prompt("הכנס סיסמת מנהל:");
+        if (pass === "1234") {
+          isAdmin = true;
+          localStorage.setItem('roomAppIsAdmin_v11', 'true');
+          alert("מצב מנהל הופעל בהצלחה!");
+          showMainApp();
+        } else if (pass !== null) {
+          alert("סיסמה שגויה.");
+        }
+      }
+    }
+
+    function showMainApp() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+      document.getElementById('current-user-name').innerText = currentUser;
+      
+      let adminBadge = document.getElementById('admin-indicator');
+      let adminBtn = document.getElementById('admin-login-btn');
+      if (isAdmin) {
+        adminBadge.style.display = 'inline-block';
+        adminBtn.innerText = 'יציאה ממנהל 🔓';
+      } else {
+        adminBadge.style.display = 'none';
+        adminBtn.innerText = 'כניסת מנהל 🔒';
+      }
+      loadDailyData();
+    }
+
+    function changeDay(offset) {
+      currentDate.setDate(currentDate.getDate() + offset);
+      if (currentDate.getDay() === 6) currentDate.setDate(currentDate.getDate() + (offset > 0 ? 1 : -1));
+      loadDailyData();
+    }
+    function changeWeek(offset) { currentDate.setDate(currentDate.getDate() + (offset * 7)); loadDailyData(); }
+    function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); loadDailyData(); }
+    function resetToToday() {
+      currentDate = new Date();
+      if (currentDate.getDay() === 6) currentDate.setDate(currentDate.getDate() + 1);
+      loadDailyData();
+    }
+    function selectDayTab(targetDayIndex) {
+      let currentDay = currentDate.getDay();
+      if (currentDay === 6) currentDay = 0;
+      let diff = targetDayIndex - currentDay;
+      currentDate.setDate(currentDate.getDate() + diff);
+      loadDailyData();
+    }
+
+    function formatDate(date) {
+      let d = String(date.getDate()).padStart(2, '0');
+      let m = String(date.getMonth() + 1).padStart(2, '0');
+      return `${d}/${m}/${date.getFullYear()}`;
+    }
+    function formatDateShort(date) {
+      let d = String(date.getDate()).padStart(2, '0');
+      let m = String(date.getMonth() + 1).padStart(2, '0');
+      return `${d}/${m}`;
+    }
+
+    function renderDayTabs() {
+      let tabsContainer = document.getElementById('day-tabs');
+      tabsContainer.innerHTML = '';
+      let currentDayIdx = currentDate.getDay();
+      if (currentDayIdx === 6) currentDayIdx = 0;
+      let sunday = new Date(currentDate);
+      sunday.setDate(currentDate.getDate() - currentDayIdx);
+
+      for (let i = 0; i < 6; i++) {
+        let tabDate = new Date(sunday);
+        tabDate.setDate(sunday.getDate() + i);
+        let isCurrent = (i === currentDayIdx);
+        let activeClass = isCurrent ? 'active' : '';
+        tabsContainer.innerHTML += `
+          <div class="day-tab ${activeClass}" onclick="selectDayTab(${i})">
+            <span class="day-tab-name">${tabDaysNames[i]}</span>
+            <span class="day-tab-date">${formatDateShort(tabDate)}</span>
+          </div>`;
+      }
+    }
+
+    function loadDailyData() {
+      renderDayTabs();
+      let dateStr = formatDate(currentDate);
+      let dayName = sheetDaysHebrew[currentDate.getDay()];
+      document.getElementById('date-display').innerText = `יום ${dayName}, ${dateStr}`;
+      document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלת חדרים...</div>';
+
+      fetchGet({ action: 'getDailyData', dateStr: dateStr, dayName: dayName })
+        .then(data => renderTable(data))
+        .catch(err => {
+          document.getElementById('table-container').innerHTML = `
+            <div class="error-box">
+              <p>⚠️ אירעה שגיאה בטעינת הטבלה משרת הנתונים.</p>
+              <button class="nav-btn-sm btn-today" onclick="loadDailyData()">לחץ לרענון</button>
+            </div>`;
+        });
+    }
+
+    function renderTable(data) {
+      let container = document.getElementById('table-container');
+      if (!data || !data.rooms || data.rooms.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>אין פעילות מתוכננת ביום זה.</p>";
+        return;
+      }
+
+      let tzfiraCount = data.rooms.filter(r => r.includes('הצפירה')).length;
+      let totalRooms = data.rooms.length;
+
+      let html = '<div class="table-wrapper"><table><thead><tr><th class="time-col">שעה</th>';
+      data.rooms.forEach(room => {
+        let headerClass = room.includes('הצפירה') ? 'th-tzfira' : 'th-keren';
+        html += `<th class="${headerClass}">${room}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      let rendered16Block = false;
+
+      data.timeRows.forEach(row => {
+        let t = row.time;
+        if (data.isSunday && !data.isMeetingReleased) {
+          if (t === '10:00') {
+            html += `<tr><td class="time-col" style="z-index: 12 !important;">10:00-12:00</td>`;
+            html += `<td colspan="${totalRooms}" rowspan="2" class="cell-staff-meeting">
+              👥 ישיבת צוות
+              ${isAdmin ? `<br><button class="btn-action btn-release" style="margin-top:8px;" onclick="toggleStaffMeeting('Released')">שחרר ישיבת צוות (אדמין)</button>` : ''}
+            </td></tr>`;
+            return;
+          }
+          if (t === '11:00') {
+            html += `<tr><td class="time-col" style="display:none;">11:00</td></tr>`;
+            return;
+          }
+        }
+
+        if (data.isSunday && data.isMeetingReleased && t === '10:00' && isAdmin) {
+          html += `<tr><td class="time-col" style="background:#f3e8ff;">מנהל</td><td colspan="${totalRooms}" style="background:#f3e8ff; padding:4px;"><button class="btn-action btn-book" onclick="toggleStaffMeeting('Locked')">החזר נעילת ישיבת צוות (אדמין)</button></td></tr>`;
+        }
+
+        let rowClass = (t === '15:30') ? 'row-half-hour' : '';
+        html += `<tr class="${rowClass}"><td class="time-col">${t}</td>`;
+
+        data.rooms.forEach(room => {
+          let isKeren = room.includes('קרן היסוד');
+          let isTzfira = room.includes('הצפירה');
+
+          if (isKeren && t === '15:30') return; 
+          if (isTzfira && t > '15:30') {
+            if (!rendered16Block && t === '16:00') {
+              html += `<td colspan="${tzfiraCount}" rowspan="4" class="cell-unavailable">סגור</td>`;
+            }
+            return;
+          }
+
+          let cell = row.cells[room] || { status: 'unavailable', occupant: 'לא זמין' };
+          let isMyBooking = checkIsMine(cell.occupant);
+          let cellClass = isTzfira ? 'td-td-tzfira' : 'td-keren';
+          let rowspanAttr = (isKeren && t === '15:00') ? 'rowspan="2"' : '';
+
+          if (cell.status === 'free') {
+            html += `<td ${rowspanAttr} class="${cellClass} cell-free">פנוי<br><button class="btn-action btn-book" onclick="bookRoom('${t}', '${room}')">+ להירשם</button></td>`;
+          } else if (cell.status === 'unavailable') {
+            html += `<td ${rowspanAttr} class="cell-unavailable">${cell.occupant}</td>`;
+          } else {
+            let badgeClass = isMyBooking ? 'badge-mine' : (isTzfira ? 'badge-tzfira' : 'badge-keren');
+            let cellContent = `<div class="name-badge ${badgeClass}">${cell.occupant}</div>`;
+
+            if (isMyBooking) {
+              cellContent += `<br><button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
+            } else if (isAdmin) {
+              cellContent += `<br><button class="btn-action btn-release" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר</button>`;
+            }
+            html += `<td ${rowspanAttr} class="${cellClass}">${cellContent}</td>`;
+          }
+        });
+        if (t > '15:30') rendered16Block = true;
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+    }
+
+    function checkIsMine(occupant) {
+      if (!occupant || !currentUser) return false;
+      if (occupant === currentUser) return true;
+      let parts = currentUser.split(/[\s\-]+/);
+      for (let p of parts) { if (p.length >= 2 && occupant.includes(p)) return true; }
+      return false;
+    }
+
+    function toggleStaffMeeting(status) {
+      if (confirm(`כמנהל, האם ברצונך לשנות את ישיבת הצוות?`)) {
+        document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן...</div>';
+        fetchPost({ action: 'updateMeeting', dateStr: formatDate(currentDate), status: status, user: `${currentUser} (מנהל)` })
+          .then(() => loadDailyData())
+          .catch(err => { alert("שגיאה"); loadDailyData(); });
+      }
+    }
+
+    function releaseRoom(time, room) {
+      if (confirm("האם לשחרר את החדר?")) {
+        document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן...</div>';
+        fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Free', user: currentUser })
+          .then(() => loadDailyData()).catch(err => loadDailyData());
+      }
+    }
+
+    function releaseRoomAdmin(time, room, originalUser) {
+      if (confirm(`כמנהל, האם לשחרר את החדר המשובץ ל-${originalUser}?`)) {
+        document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן אדמין...</div>';
+        fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Free', user: `${currentUser} (מנהל)` })
+          .then(() => loadDailyData()).catch(err => loadDailyData());
+      }
+    }
+
+    function bookRoom(time, room) {
+      document.getElementById('table-container').innerHTML = '<div class="loader">רושם...</div>';
+      fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Booked', user: currentUser })
+        .then(() => loadDailyData()).catch(err => loadDailyData());
+    }
+  </script>
+</body>
+</html>
