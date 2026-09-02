@@ -61,29 +61,37 @@
     /* שורות חצי-שעה */
     tr.row-half-hour { height: 22.5px !important; }
     tr.row-half-hour td:not([rowspan]), tr.row-half-hour th { height: 22.5px !important; max-height: 22.5px !important; }
-    tr.row-half-hour td:not([rowspan]) .badge-only { height: 20px !important; font-size: 10px !important; }
+    tr.row-half-hour td:not([rowspan]) .badge-full { height: 20px !important; font-size: 10px !important; }
     
-    /* החרגת תא ממוזג (rowspan=2) משורת חצי-שעה כדי שתוצג תגית במידות מלאות */
+    /* החרגת תא ממוזג (rowspan=2) בקרן היסוד - חזרה למידות רגילות */
     td[rowspan="2"] { height: 45px !important; max-height: 45px !important; }
-    td[rowspan="2"] .badge-only { height: 93% !important; font-size: 12px !important; }
+    td[rowspan="2"] .badge-full { height: 93% !important; font-size: 13px !important; }
 
-    .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; }
+    .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; position: relative; }
 
-    .name-badge { display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 4px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* עיצוב אחיד לכל התאים התפוסים */
+    .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
+    
+    .badge-full { position: relative; width: 90%; height: 93%; font-size: 13px; display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 4px; font-weight: 700; }
     .badge-keren { background-color: #9333ea; color: #ffffff; }
     .badge-tzfira { background-color: #d97706; color: #ffffff; }
     .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
 
-    /* התאמת גודל טקסט לפי אורך השם למניעת חריגה */
+    /* הטקסט בתוך התיבה */
+    .badge-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; width: 100%; text-align: center; line-height: 1.2; }
+    /* כשיש כפתור X בצד שמאל, נדחוף את הטקסט קצת ימינה כדי שלא יוסתר */
+    .badge-text-with-btn { padding-left: 18px; padding-right: 2px; }
+
+    /* עיצוב כפתורי ה-X */
+    .btn-release-x { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border: none; border-radius: 3px; font-weight: 900; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.3); z-index: 5; }
+    .btn-x-red { background-color: #ef4444; color: white; }
+    .btn-x-turq { background-color: #0cb0a9; color: white; } /* צבע טורקיז בולט */
+
+    /* הקטנת טקסט לשמות ארוכים */
     .text-sm-long { font-size: 10px !important; letter-spacing: -0.3px; }
     .text-xs-long { font-size: 9px !important; letter-spacing: -0.4px; }
 
-    .badge-only { width: 90%; height: 93%; font-size: 12px; }
-
-    .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 93%; width: 100%; gap: 2px; }
-    .badge-with-btn { width: 90%; flex-grow: 1; font-size: 11px; min-height: 20px; }
-    .btn-release-custom { background-color: #ef4444; color: white; border: none; padding: 0; font-size: 10px; font-weight: bold; border-radius: 4px; width: 65%; height: 16px; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
+    /* תא פנוי: פנוי ופלוס זה לצד זה */
     .cell-free-container { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 5px; }
     .cell-free-text { font-size: 11px; color: #047857; font-weight: 700; }
     .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; margin: 0; }
@@ -330,7 +338,7 @@
         let t = row.time;
         if (data.isSunday && !data.isMeetingReleased) {
           if (t === '10:00') {
-            html += `<tr><td class="time-col">10:00</td><td colspan="${data.rooms.length}" rowspan="2" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-custom" style="width: auto; padding: 2px 8px; font-size:12px; margin-top:4px;" onclick="toggleStaffMeeting('Released')">שחרר (אדמין)</button>` : ''}</td></tr>`; return;
+            html += `<tr><td class="time-col">10:00</td><td colspan="${data.rooms.length}" rowspan="2" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-x btn-x-turq" style="position:absolute; left:6px; top:6px;" onclick="event.stopPropagation(); toggleStaffMeeting('Released')">&#10005;</button>` : ''}</td></tr>`; return;
           }
           if (t === '11:00') return;
         }
@@ -362,28 +370,32 @@
             let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
             let displayOcc = getShortName(cell.occupant); 
             
-            // חישוב הקטנת פונט לשמות ארוכים בלבד
+            // חישוב הקטנת פונט לשמות ארוכים
             let fontClass = '';
             if (displayOcc.length > 12) {
               fontClass = 'text-xs-long';
             } else if (displayOcc.length > 8) {
               fontClass = 'text-sm-long';
             }
+            
+            // האם יש כפתור X? 
+            let hasBtn = isMine || isAdmin;
+            let textClass = hasBtn ? 'badge-text badge-text-with-btn' : 'badge-text';
 
-            if (isMine || isAdmin) {
-                let content = `<div class="occupied-container">`;
-                content += `<div class="name-badge badge-with-btn ${bCls} ${fontClass}">${displayOcc}</div>`;
-                if (isMine) {
-                    content += `<button class="btn-release-custom" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
-                } else {
-                    content += `<button class="btn-release-custom" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר (מנהל)</button>`;
-                }
-                content += `</div>`;
-                html += `<td ${rs} class="${cCls}">${content}</td>`;
-            } else {
-                let content = `<div class="name-badge badge-only ${bCls} ${fontClass}">${displayOcc}</div>`;
-                html += `<td ${rs} class="${cCls}">${content}</td>`;
+            let content = `<div class="occupied-container">`;
+            content += `<div class="name-badge badge-full ${bCls} ${fontClass}">`;
+            content += `<span class="${textClass}">${displayOcc}</span>`;
+            
+            if (isMine) {
+                // X אדום לעצמי
+                content += `<button class="btn-release-x btn-x-red" onclick="event.stopPropagation(); releaseRoom('${t}', '${room}')">&#10005;</button>`;
+            } else if (isAdmin) {
+                // X טורקיז לאדמין עבור אחרים
+                content += `<button class="btn-release-x btn-x-turq" onclick="event.stopPropagation(); releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">&#10005;</button>`;
             }
+            
+            content += `</div></div>`;
+            html += `<td ${rs} class="${cCls}">${content}</td>`;
           }
         });
         if (t > '15:30') rendered16Block = true;
