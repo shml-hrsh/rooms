@@ -3,28 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <!-- שם האפליקציה שיופיע בלשונית ובמסך הבית -->
   <title>מערכת שיבוץ חדרים</title>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Hebrew, sans-serif; }
-    /* הקטנת שוליים כלליים בטלפון כדי להרוויח מקום */
-    body { background-color: #f8fafc; margin: 0; padding: 2px; color: #0f172a; }
-    .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 8px; border-radius: 8px; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
     
-    h2 { margin-top: 0; text-align: center; font-size: 18px; color: #1e293b; }
+    /* שוליים חיצוניים אחידים לכל המסך בטלפון */
+    body { background-color: #f8fafc; margin: 0; padding: 2px; color: #0f172a; }
+    .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 4px; border-radius: 8px; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
+    
+    /* מכולת לוגו וכותרת ראשית */
+    .app-brand-header { text-align: center; padding: 4px 0 2px 0; }
+    .app-logo { max-height: 45px; width: auto; margin-bottom: 2px; }
+    h2 { margin: 0; text-align: center; font-size: 17px; color: #1e293b; font-weight: 800; }
+    
     select, button, input { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; }
     button { background-color: #2563eb; color: white; border: none; cursor: pointer; font-weight: 600; }
     button:active { transform: scale(0.98); }
     
-    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; padding: 2px 4px 6px 4px; border-bottom: 1px solid #e2e8f0; }
     .admin-badge { background: #dc2626; color: white; padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-right: 6px; }
     
-    .nav-container { background: #f1f5f9; padding: 6px; border-radius: 8px; margin-bottom: 8px; }
+    /* סרגל ניווט תאריכים - צמצום המרווח התחתון ל-2px בלבד */
+    .nav-container { background: #f1f5f9; padding: 6px; border-radius: 8px; margin-bottom: 2px; }
     .nav-top-row { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 6px; }
     .nav-btn-sm { width: auto; padding: 4px 6px; font-size: 10px; border-radius: 4px; margin: 0; background-color: #e2e8f0; color: #334155; }
     .btn-today { background-color: #0284c7; color: white; font-weight: 700; }
     .btn-admin-login { background-color: #475569; color: white; }
     
-    .day-tabs { display: flex; gap: 2px; justify-content: space-between; overflow-x: auto; padding-bottom: 4px; margin-bottom: 6px; border-bottom: 2px solid #cbd5e1; }
+    .day-tabs { display: flex; gap: 2px; justify-content: space-between; overflow-x: auto; padding-bottom: 4px; margin-bottom: 4px; border-bottom: 2px solid #cbd5e1; }
     .day-tab { flex: 1; min-width: 45px; text-align: center; padding: 4px 1px; border-radius: 6px 6px 0 0; background: #e2e8f0; color: #475569; cursor: pointer; }
     .day-tab-name { font-weight: 700; font-size: 11px; display: block; }
     .day-tab-date { font-size: 9px; opacity: 0.85; }
@@ -34,10 +41,10 @@
     .date-title { font-weight: 800; font-size: 14px; color: #1e293b; }
     .day-step-btn { width: auto; padding: 4px 8px; font-size: 10px; margin: 0; background-color: #2563eb; }
 
-    .table-wrapper { overflow-x: auto; max-height: 70vh; max-width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+    /* יישור רוחב הטבלה והשוליים בדיוק לסרגל העליון */
+    .table-wrapper { overflow-x: auto; max-height: 72vh; width: 100%; margin: 0; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
     table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
     
-    /* הקטנת רוחב מינימלי לעמודות החדרים (75px במקום 90px) */
     th, td { border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; padding: 4px 2px; min-width: 75px; height: 45px; vertical-align: middle; }
     th { font-weight: 800; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     
@@ -46,7 +53,6 @@
     th.th-tzfira, td.td-tzfira { background-color: #fffbeef0; }
     th.th-tzfira { background-color: #fef9c3 !important; color: #713f12 !important; border-bottom: 2px solid #eab308 !important; }
     
-    /* הצרת עמודת השעה משמעותית (42px) */
     th.time-col, td.time-col { 
       min-width: 42px; width: 42px; font-weight: 800; font-size: 10px; background-color: #f8fafc !important; 
       position: sticky; right: 0; z-index: 11; border-left: 2px solid #cbd5e1; box-shadow: -1px 0 2px rgba(0,0,0,0.1);
@@ -72,7 +78,6 @@
     #main-app { display: none; }
     .loader { text-align: center; padding: 20px; color: #64748b; font-size: 14px; }
     
-    /* Modal (חלון קופץ לאדמין) */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
     .modal-box { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     .modal-title { margin-top: 0; font-size: 16px; margin-bottom: 12px; color: #1e293b; }
@@ -85,13 +90,24 @@
 <body>
 
   <div id="login-screen" class="container" style="max-width:400px; padding: 20px;">
-    <h2>מערכת שיבוץ חדרים</h2>
-    <p style="text-align:center; font-size: 14px;">בחר את שמך:</p>
+    <!-- מכלול לוגו / כותרת בהתחברות -->
+    <div class="app-brand-header">
+      <!-- אם יש לינק לתמונת לוגו, בטל את ההערה מהשורה למטה והכנס את הקישור לתמונה -->
+      <!-- <img src="https://example.com/logo.png" alt="לוגו" class="app-logo"> -->
+      <h2>מערכת שיבוץ חדרים</h2>
+    </div>
+    <p style="text-align:center; font-size: 14px;">בחר את שמך להתחברות:</p>
     <select id="user-select"><option value="">טוען עובדים...</option></select>
     <button onclick="saveUser()">היכנס</button>
   </div>
 
   <div id="main-app" class="container">
+    <!-- כותרת מותג עליונה -->
+    <div class="app-brand-header">
+      <!-- <img src="https://example.com/logo.png" alt="לוגו" class="app-logo"> -->
+      <h2>מערכת שיבוץ חדרים</h2>
+    </div>
+
     <div class="user-header">
       <div>
         <span>שלום, <strong id="current-user-name"></strong></span>
@@ -141,7 +157,6 @@
   </div>
 
   <script>
-    // הלינק החדש שלך מוטמע כאן:
     const API_URL = "https://script.google.com/macros/s/AKfycby4hPC4cSMGy_781LZc-KPZoNgGLQ1Mm-XkFbU_NhosQ1Zl6XXdP7E5v7vzHMlklErVBQ/exec"; 
 
     async function fetchGet(params) {
@@ -169,11 +184,9 @@
     const sheetDaysHebrew = ["ראשון", "יום שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
     const tabDaysNames = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
-    // משתנים גלובליים למנגנון השמות
     let globalUsersList = [];
-    let shortNamesMap = {}; // ממפה שם מלא לשם תצוגה קצר
+    let shortNamesMap = {};
 
-    // משתנים לשמירת נתוני המודל
     let pendingBookTime = "";
     let pendingBookRoom = "";
 
@@ -191,7 +204,6 @@
       }).catch(err => console.error(err));
     };
 
-    // בניית מילון שמות קצרים (שם פרטי, ואם יש כפילות - מוסיף אות משם המשפחה)
     function buildShortNamesMap() {
       let firstNamesDict = {};
       globalUsersList.forEach(fullName => {
@@ -203,13 +215,13 @@
 
       for (let first in firstNamesDict) {
         if (firstNamesDict[first].length === 1) {
-          shortNamesMap[firstNamesDict[first][0]] = first; // שם יחיד
+          shortNamesMap[firstNamesDict[first][0]] = first;
         } else {
           firstNamesDict[first].forEach(fullName => {
             let parts = fullName.trim().split(" ");
             let short = first;
             if (parts.length > 1) {
-              short += " " + parts[1].charAt(0) + "'"; // מוסיף אות ראשונה ממשפחה
+              short += " " + parts[1].charAt(0) + "'";
             }
             shortNamesMap[fullName] = short;
           });
@@ -220,8 +232,6 @@
     function getShortName(fullName) {
       if (!fullName) return "";
       if (fullName.includes("ישיבת צוות") || fullName === "לא זמין" || fullName === "פנוי") return fullName;
-      
-      // מנקה הערות זמניות כמו "(מנהל)" אם יש
       let cleanName = fullName.replace(" (מנהל)", "").trim();
       return shortNamesMap[cleanName] || cleanName;
     }
@@ -265,7 +275,6 @@
       loadDailyData();
     }
 
-    // ניווט זמנים (מקוצר)
     function changeDay(o) { currentDate.setDate(currentDate.getDate() + o); if (currentDate.getDay()===6) currentDate.setDate(currentDate.getDate() + (o>0?1:-1)); loadDailyData(); }
     function changeWeek(o) { currentDate.setDate(currentDate.getDate() + (o*7)); loadDailyData(); }
     function resetToToday() { currentDate = new Date(); if (currentDate.getDay()===6) currentDate.setDate(currentDate.getDate() + 1); loadDailyData(); }
@@ -333,7 +342,6 @@
             html += `<td ${rs} class="cell-unavailable">${cell.occupant}</td>`;
           } else {
             let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
-            // כאן המקום בו אנו מציגים את השם הקצר בלבד
             let displayOcc = getShortName(cell.occupant); 
             let content = `<div class="name-badge ${bCls}">${displayOcc}</div>`;
             if (isMine) content += `<br><button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
@@ -353,7 +361,7 @@
       if (isAdmin) {
         pendingBookTime = time; pendingBookRoom = room;
         document.getElementById('modal-title-text').innerText = `שיבוץ: ${room} בשעה ${time}`;
-        document.getElementById('modal-user-select').value = currentUser; // ברירת מחדל לאדמין עצמו
+        document.getElementById('modal-user-select').value = currentUser;
         document.getElementById('admin-modal').style.display = 'flex';
       } else {
         document.getElementById('table-container').innerHTML = '<div class="loader">רושם...</div>';
@@ -372,7 +380,6 @@
       if (bookingType === 'onetime') {
         fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: pendingBookTime, room: pendingBookRoom, status: 'Booked', user: selectedUser }).then(()=>loadDailyData());
       } else {
-        // שיבוץ קבוע
         let dName = sheetDaysHebrew[currentDate.getDay()];
         fetchPost({ action: 'updatePermanentRoom', dayName: dName, time: pendingBookTime, room: pendingBookRoom, user: selectedUser }).then(()=>loadDailyData()).catch(e=>{alert(e); loadDailyData();});
       }
