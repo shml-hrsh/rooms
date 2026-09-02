@@ -15,7 +15,7 @@
     body { background-color: #f8fafc; margin: 0; padding: 0; color: #0f172a; }
     .container { max-width: 100%; margin: 0 auto; background: #ffffff; padding: 0; border-radius: 0; box-shadow: none; }
     
-    /* הדר מותג: לוגו 68 פיקסלים, מרווח כ-3 אותיות */
+    /* הדר מותג: לוגו 68 פיקסלים, מרווח של כ-3 אותיות (14px) */
     .app-brand-header { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 4px 4px 4px; }
     .app-logo { max-height: 68px; width: auto; }
     h2 { margin: 0; font-size: 20px; color: #1e293b; font-weight: 800; line-height: 1; }
@@ -56,7 +56,7 @@
     th.th-tzfira, td.td-tzfira { background-color: #fffbeef0; }
     th.th-tzfira { background-color: #fef9c3 !important; color: #713f12 !important; border-bottom: 2px solid #eab308 !important; }
     
-    /* עמודת שעה מוגדלת (48px) וטקסט גדול יותר */
+    /* עמודת שעה מוגדלת (48px) וטקסט מוגדל */
     th.time-col, td.time-col { 
       min-width: 48px; width: 48px; font-weight: 800; font-size: 12px; background-color: #f8fafc !important; 
       position: sticky; right: 0; z-index: 11; border-left: 2px solid #cbd5e1; box-shadow: -1px 0 2px rgba(0,0,0,0.1);
@@ -67,22 +67,25 @@
     tr.row-half-hour td { height: 20px !important; max-height: 20px; font-size: 10px; }
     .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; }
 
-    /* עיצוב תא תפוס: עטיפה של עד 95% ופנים של 85%, דחוסים לגובה מדויק למניעת קפיצות שורה */
-    .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 95%; margin: 0 auto; gap: 2px; }
-    
-    .name-badge { display: flex; align-items: center; justify-content: center; width: 85%; height: 22px; margin: 0; padding: 0 4px; border-radius: 4px; font-weight: 700; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* הגדרות כלליות לתגית השם */
+    .name-badge { display: flex; align-items: center; justify-content: center; margin: 0 auto; padding: 0 4px; border-radius: 4px; font-weight: 700; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .badge-keren { background-color: #9333ea; color: #ffffff; }
     .badge-tzfira { background-color: #d97706; color: #ffffff; }
     .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
 
-    /* כפתור השחרור: בגודל 85% וגובה קטן כדי שייכנס בתא בלי להרחיב אותו */
-    .btn-action { padding: 0; font-size: 10px; margin: 0; border-radius: 4px; width: 85%; height: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
-    .btn-release { background-color: #ef4444; color: white; }
+    /* 1. תא עם שם בלבד: נמתח לגובה 38px ורוחב 90%, משאיר שוליים סימטריים לחלוטין */
+    .badge-only { width: 90%; height: 38px; }
 
-    /* עיצוב תא פנוי: טקסט 'פנוי' ירוק + כפתור בולט להרשמה */
+    /* 2. תא של המשתמש/אדמין: מכולה פנימית המכילה את השם (בגובהו המקורי) וכפתור השחרור */
+    .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 2px; }
+    .badge-with-btn { width: 90%; height: 20px; }
+    .btn-action { padding: 0; font-size: 10px; margin: 0; border-radius: 4px; width: 90%; height: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+    .btn-release { background-color: #ef4444; color: white; border: none; cursor: pointer; }
+
+    /* עיצוב תא פנוי: טקסט 'פנוי' ירוק + כפתור פלוס מרובע לחלוטין */
     .cell-free-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 2px; }
     .cell-free-text { font-size: 10px; color: #047857; font-weight: 700; line-height: 1; }
-    .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 20px; width: 60px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; }
+    .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; }
     .btn-book-plus:active { background-color: #059669; }
 
     .cell-unavailable { background-color: #f1f5f9 !important; color: #94a3b8; font-size: 10px; }
@@ -357,17 +360,21 @@
             let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
             let displayOcc = getShortName(cell.occupant); 
             
-            // עטיפת הנתונים בתא התפוס עם המכולה החדשה לשמירה על גובה אחיד
-            let content = `<div class="occupied-container">`;
-            content += `<div class="name-badge ${bCls}">${displayOcc}</div>`;
-            if (isMine) {
-                content += `<button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
-            } else if (isAdmin) {
-                content += `<button class="btn-action btn-release" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר (מנהל)</button>`;
+            // פיצול בין תא ששייך לי/לאדמין (עם שחרור) לתא של מישהו אחר (שם בלבד)
+            if (isMine || isAdmin) {
+                let content = `<div class="occupied-container">`;
+                content += `<div class="name-badge badge-with-btn ${bCls}">${displayOcc}</div>`;
+                if (isMine) {
+                    content += `<button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
+                } else {
+                    content += `<button class="btn-action btn-release" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר (מנהל)</button>`;
+                }
+                content += `</div>`;
+                html += `<td ${rs} class="${cCls}">${content}</td>`;
+            } else {
+                let content = `<div class="name-badge badge-only ${bCls}">${displayOcc}</div>`;
+                html += `<td ${rs} class="${cCls}">${content}</td>`;
             }
-            content += `</div>`;
-            
-            html += `<td ${rs} class="${cCls}">${content}</td>`;
           }
         });
         if (t > '15:30') rendered16Block = true;
