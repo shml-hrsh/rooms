@@ -415,7 +415,6 @@
         document.getElementById('modal-user-select').value = currentUser;
         document.getElementById('admin-modal').style.display = 'flex';
       } else {
-        // התראת אישור על כפילויות לפני השיבוץ
         if (window.currentDailyData && window.currentDailyData.timeRows) {
             let timeRow = window.currentDailyData.timeRows.find(r => r.time === time);
             if (timeRow) {
@@ -428,7 +427,7 @@
                 }
                 if (alreadyHasRoom) {
                     if (!confirm("כבר יש לך חדר משוריין בשעה זו. האם אתה בטוח שברצונך לשבץ חדר נוסף?")) {
-                        return; // עצירת הפעולה אם המשתמש התחרט
+                        return;
                     }
                 }
             }
