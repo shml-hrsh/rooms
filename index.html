@@ -6,86 +6,87 @@
   <title>מערכת שיבוץ חדרים</title>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Hebrew, sans-serif; }
-    body { background-color: #f8fafc; margin: 0; padding: 8px; color: #0f172a; }
-    .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 14px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.06); }
-    h2 { margin-top: 0; text-align: center; font-size: 20px; color: #1e293b; }
-    select, button { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; font-weight: 600; }
-    button { background-color: #2563eb; color: white; border: none; cursor: pointer; transition: background 0.2s; }
+    /* הקטנת שוליים כלליים בטלפון כדי להרוויח מקום */
+    body { background-color: #f8fafc; margin: 0; padding: 2px; color: #0f172a; }
+    .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 8px; border-radius: 8px; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
+    
+    h2 { margin-top: 0; text-align: center; font-size: 18px; color: #1e293b; }
+    select, button, input { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; }
+    button { background-color: #2563eb; color: white; border: none; cursor: pointer; font-weight: 600; }
     button:active { transform: scale(0.98); }
     
-    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
-    .admin-badge { background: #dc2626; color: white; padding: 3px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+    .admin-badge { background: #dc2626; color: white; padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-right: 6px; }
     
-    .nav-container { background: #f1f5f9; padding: 10px; border-radius: 10px; margin-bottom: 12px; }
-    .nav-top-row { display: flex; justify-content: space-between; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
-    .nav-btn-sm { width: auto; padding: 6px 10px; font-size: 11px; border-radius: 6px; margin: 0; background-color: #e2e8f0; color: #334155; }
-    .nav-btn-sm:hover { background-color: #cbd5e1; }
+    .nav-container { background: #f1f5f9; padding: 6px; border-radius: 8px; margin-bottom: 8px; }
+    .nav-top-row { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 6px; }
+    .nav-btn-sm { width: auto; padding: 4px 6px; font-size: 10px; border-radius: 4px; margin: 0; background-color: #e2e8f0; color: #334155; }
     .btn-today { background-color: #0284c7; color: white; font-weight: 700; }
-    .btn-admin-login { background-color: #475569; color: white; font-weight: 700; }
+    .btn-admin-login { background-color: #475569; color: white; }
     
-    .day-tabs { display: flex; gap: 2px; justify-content: space-between; overflow-x: auto; padding-bottom: 4px; margin-bottom: 8px; border-bottom: 2px solid #cbd5e1; }
-    .day-tab { flex: 1; min-width: 55px; text-align: center; padding: 6px 2px; border-radius: 8px 8px 0 0; background: #e2e8f0; color: #475569; font-size: 12px; cursor: pointer; }
-    .day-tab-name { font-weight: 700; display: block; }
-    .day-tab-date { font-size: 10px; opacity: 0.85; }
-    .day-tab.active { background: #2563eb; color: white; font-weight: 700; }
+    .day-tabs { display: flex; gap: 2px; justify-content: space-between; overflow-x: auto; padding-bottom: 4px; margin-bottom: 6px; border-bottom: 2px solid #cbd5e1; }
+    .day-tab { flex: 1; min-width: 45px; text-align: center; padding: 4px 1px; border-radius: 6px 6px 0 0; background: #e2e8f0; color: #475569; cursor: pointer; }
+    .day-tab-name { font-weight: 700; font-size: 11px; display: block; }
+    .day-tab-date { font-size: 9px; opacity: 0.85; }
+    .day-tab.active { background: #2563eb; color: white; }
     
-    .date-title-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-    .date-title { font-weight: 800; font-size: 15px; color: #1e293b; }
-    .day-step-btn { width: auto; padding: 6px 10px; font-size: 11px; margin: 0; background-color: #2563eb; }
+    .date-title-bar { display: flex; justify-content: space-between; align-items: center; }
+    .date-title { font-weight: 800; font-size: 14px; color: #1e293b; }
+    .day-step-btn { width: auto; padding: 4px 8px; font-size: 10px; margin: 0; background-color: #2563eb; }
 
-    .table-wrapper { 
-      overflow-x: auto; 
-      overflow-y: auto; 
-      max-height: 65vh; 
-      max-width: 100%; 
-      border: 1px solid #cbd5e1; 
-      border-radius: 8px; 
-      background: white;
-    }
+    .table-wrapper { overflow-x: auto; max-height: 70vh; max-width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
     
-    table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 680px; font-size: 12px; text-align: center; }
-    th, td { border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; padding: 6px 4px; min-width: 90px; height: 50px; vertical-align: middle; }
-    
-    th { font-weight: 800; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1); }
+    /* הקטנת רוחב מינימלי לעמודות החדרים (75px במקום 90px) */
+    th, td { border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; padding: 4px 2px; min-width: 75px; height: 45px; vertical-align: middle; }
+    th { font-weight: 800; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     
     th.th-keren, td.td-keren { background-color: #faf5ff; }
     th.th-keren { background-color: #f3e8ff !important; color: #581c87 !important; border-bottom: 2px solid #a855f7 !important; }
-    
     th.th-tzfira, td.td-tzfira { background-color: #fffbeef0; }
     th.th-tzfira { background-color: #fef9c3 !important; color: #713f12 !important; border-bottom: 2px solid #eab308 !important; }
     
+    /* הצרת עמודת השעה משמעותית (42px) */
     th.time-col, td.time-col { 
-      min-width: 55px; width: 55px; font-weight: 800; background-color: #f8fafc !important; 
-      position: sticky; right: 0; z-index: 11; border-left: 2px solid #cbd5e1; color: #0f172a; box-shadow: -2px 0 2px -1px rgba(0,0,0,0.1);
+      min-width: 42px; width: 42px; font-weight: 800; font-size: 10px; background-color: #f8fafc !important; 
+      position: sticky; right: 0; z-index: 11; border-left: 2px solid #cbd5e1; box-shadow: -1px 0 2px rgba(0,0,0,0.1);
     }
-    th.time-col { z-index: 15 !important; background-color: #e2e8f0 !important; }
+    th.time-col { z-index: 15 !important; background-color: #e2e8f0 !important; font-size: 11px; }
 
-    tr.row-half-hour { height: 26px !important; }
-    tr.row-half-hour td { height: 26px !important; font-size: 11px; }
+    tr.row-half-hour { height: 20px !important; }
+    tr.row-half-hour td { height: 20px !important; font-size: 10px; }
+    .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; }
 
-    .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 14px; font-weight: 800; border: 2px solid #c084fc !important; }
-
-    .name-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+    .name-badge { display: inline-block; padding: 3px 4px; border-radius: 4px; font-weight: 700; font-size: 11px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .badge-keren { background-color: #9333ea; color: #ffffff; }
     .badge-tzfira { background-color: #d97706; color: #ffffff; }
     .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
 
-    .cell-free { background-color: #ecfdf5; color: #047857; font-weight: 600; }
-    .cell-unavailable { background-color: #f1f5f9 !important; color: #94a3b8; font-size: 11px; }
+    .cell-free { background-color: #ecfdf5; color: #047857; font-weight: 600; cursor: pointer; }
+    .cell-unavailable { background-color: #f1f5f9 !important; color: #94a3b8; font-size: 10px; }
     
-    .btn-action { padding: 4px 8px; font-size: 11px; margin-top: 4px; border-radius: 4px; font-weight: 700; width: auto; }
+    .btn-action { padding: 3px 6px; font-size: 10px; margin-top: 2px; border-radius: 4px; width: auto; font-weight: bold; }
     .btn-book { background-color: #10b981; color: white; }
     .btn-release { background-color: #ef4444; color: white; }
+    
     #main-app { display: none; }
-    .loader { text-align: center; padding: 30px; color: #64748b; font-size: 16px; }
-    .error-box { text-align: center; padding: 20px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; color: #991b1b; }
+    .loader { text-align: center; padding: 20px; color: #64748b; font-size: 14px; }
+    
+    /* Modal (חלון קופץ לאדמין) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+    .modal-box { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .modal-title { margin-top: 0; font-size: 16px; margin-bottom: 12px; color: #1e293b; }
+    .modal-radio-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .modal-radio-group label { font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-cancel { background: #64748b; }
   </style>
 </head>
 <body>
 
-  <div id="login-screen" class="container" style="max-width:400px;">
+  <div id="login-screen" class="container" style="max-width:400px; padding: 20px;">
     <h2>מערכת שיבוץ חדרים</h2>
-    <p style="text-align:center; color:#64748b;">בחר את שמך להתחברות:</p>
+    <p style="text-align:center; font-size: 14px;">בחר את שמך:</p>
     <select id="user-select"><option value="">טוען עובדים...</option></select>
     <button onclick="saveUser()">היכנס</button>
   </div>
@@ -94,38 +95,54 @@
     <div class="user-header">
       <div>
         <span>שלום, <strong id="current-user-name"></strong></span>
-        <span id="admin-indicator" class="admin-badge" style="display:none;">מנהל פעיל 👑</span>
+        <span id="admin-indicator" class="admin-badge" style="display:none;">אדמין</span>
       </div>
       <div>
-        <button class="nav-btn-sm btn-admin-login" id="admin-login-btn" onclick="toggleAdminPrompt()">כניסת מנהל 🔒</button>
-        <span style="color:#2563eb; cursor:pointer; font-weight:600; margin-right:8px;" onclick="logout()">החלף משתמש</span>
+        <button class="nav-btn-sm btn-admin-login" id="admin-login-btn" onclick="toggleAdminPrompt()">ניהול 🔒</button>
+        <span style="color:#2563eb; cursor:pointer; margin-right:4px;" onclick="logout()">החלף</span>
       </div>
     </div>
 
     <div class="nav-container">
       <div class="nav-top-row">
-        <button class="nav-btn-sm" onclick="changeMonth(-1)">&laquo; חודש קודם</button>
         <button class="nav-btn-sm" onclick="changeWeek(-1)">&lsaquo; שבוע קודם</button>
         <button class="nav-btn-sm btn-today" onclick="resetToToday()">היום</button>
         <button class="nav-btn-sm" onclick="changeWeek(1)">שבוע הבא &rsaquo;</button>
-        <button class="nav-btn-sm" onclick="changeMonth(1)">חודש הבא &raquo;</button>
       </div>
-
       <div id="day-tabs" class="day-tabs"></div>
-
       <div class="date-title-bar">
-        <button class="day-step-btn" onclick="changeDay(-1)">&rarr; יום קודם</button>
+        <button class="day-step-btn" onclick="changeDay(-1)">&rarr; קודם</button>
         <div id="date-display" class="date-title"></div>
-        <button class="day-step-btn" onclick="changeDay(1)">יום הבא &larr;</button>
+        <button class="day-step-btn" onclick="changeDay(1)">הבא &larr;</button>
       </div>
     </div>
 
-    <div id="table-container" class="loader">טוען טבלת חדרים...</div>
+    <div id="table-container" class="loader">טוען טבלה...</div>
+  </div>
+
+  <!-- Modal Admin Booking -->
+  <div id="admin-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-title" id="modal-title-text">שיבוץ חדר כאדמין</h3>
+      <p style="font-size:12px; margin-bottom:5px;">עבור מי השיבוץ?</p>
+      <select id="modal-user-select"></select>
+      
+      <p style="font-size:12px; margin-top:15px; margin-bottom:5px;">סוג השיבוץ?</p>
+      <div class="modal-radio-group">
+        <label><input type="radio" name="booking-type" value="onetime" checked> חד-פעמי (לתאריך הספציפי הזה)</label>
+        <label><input type="radio" name="booking-type" value="permanent"> קבוע (שינוי בטבלה המקורית)</label>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-cancel" onclick="closeAdminModal()">ביטול</button>
+        <button onclick="submitAdminBooking()">בצע שיבוץ</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // הקישור האישי שלך ל-API של גוגל מוטמע כאן:
-    const API_URL = "https://script.google.com/macros/s/AKfycbxXk0rup0dpP2P4LuKJ1eu9VEUKvKeVOZYaeaVUTCbKO7-TY_cKl4RaAnoVmzvh0bIe1Q/exec"; 
+    // הלינק החדש שלך מוטמע כאן:
+    const API_URL = "https://script.google.com/macros/s/AKfycby4hPC4cSMGy_781LZc-KPZoNgGLQ1Mm-XkFbU_NhosQ1Zl6XXdP7E5v7vzHMlklErVBQ/exec"; 
 
     async function fetchGet(params) {
       const query = new URLSearchParams(params).toString();
@@ -152,267 +169,222 @@
     const sheetDaysHebrew = ["ראשון", "יום שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
     const tabDaysNames = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
 
-    const defaultUsers = ["איילת דורון", "שמוליק הרשקוביץ", "שלומית קגיה", "קרן ביידץ", "אלמז איינהו", "דנית תבל", "יעל ציק", "מישל מנדלוביץ- יובל", "מריאנה חנין", "אירית מאיר", "ג׳סיקה בון", "שיר מלר", "אילנה לוין", "איתי צוקרמן", "יפעת זיידמן"];
+    // משתנים גלובליים למנגנון השמות
+    let globalUsersList = [];
+    let shortNamesMap = {}; // ממפה שם מלא לשם תצוגה קצר
+
+    // משתנים לשמירת נתוני המודל
+    let pendingBookTime = "";
+    let pendingBookRoom = "";
 
     window.onload = function() {
-      if (currentUser) {
-        showMainApp();
-      } else {
-        fetchGet({ action: 'getEmployees' })
-          .then(data => populateUsers(data.employees))
-          .catch(err => { console.error(err); populateUsers(defaultUsers); });
-      }
+      fetchGet({ action: 'getEmployees' }).then(data => {
+        globalUsersList = data.employees;
+        buildShortNamesMap();
+        populateUsersDropdowns();
+        
+        if (currentUser) {
+          showMainApp();
+        } else {
+          document.getElementById('login-screen').style.display = 'block';
+        }
+      }).catch(err => console.error(err));
     };
 
-    function populateUsers(users) {
-      let select = document.getElementById('user-select');
-      select.innerHTML = '<option value="">בחר עובד/ת...</option>';
-      let list = (users && users.length > 0) ? users : defaultUsers;
-      list.forEach(u => select.innerHTML += `<option value="${u}">${u}</option>`);
+    // בניית מילון שמות קצרים (שם פרטי, ואם יש כפילות - מוסיף אות משם המשפחה)
+    function buildShortNamesMap() {
+      let firstNamesDict = {};
+      globalUsersList.forEach(fullName => {
+        let parts = fullName.trim().split(" ");
+        let first = parts[0];
+        if (!firstNamesDict[first]) firstNamesDict[first] = [];
+        firstNamesDict[first].push(fullName);
+      });
+
+      for (let first in firstNamesDict) {
+        if (firstNamesDict[first].length === 1) {
+          shortNamesMap[firstNamesDict[first][0]] = first; // שם יחיד
+        } else {
+          firstNamesDict[first].forEach(fullName => {
+            let parts = fullName.trim().split(" ");
+            let short = first;
+            if (parts.length > 1) {
+              short += " " + parts[1].charAt(0) + "'"; // מוסיף אות ראשונה ממשפחה
+            }
+            shortNamesMap[fullName] = short;
+          });
+        }
+      }
+    }
+
+    function getShortName(fullName) {
+      if (!fullName) return "";
+      if (fullName.includes("ישיבת צוות") || fullName === "לא זמין" || fullName === "פנוי") return fullName;
+      
+      // מנקה הערות זמניות כמו "(מנהל)" אם יש
+      let cleanName = fullName.replace(" (מנהל)", "").trim();
+      return shortNamesMap[cleanName] || cleanName;
+    }
+
+    function populateUsersDropdowns() {
+      let selectLogin = document.getElementById('user-select');
+      let selectAdmin = document.getElementById('modal-user-select');
+      selectLogin.innerHTML = '<option value="">בחר עובד/ת...</option>';
+      selectAdmin.innerHTML = '';
+      
+      globalUsersList.forEach(u => {
+        selectLogin.innerHTML += `<option value="${u}">${u}</option>`;
+        selectAdmin.innerHTML += `<option value="${u}">${u}</option>`;
+      });
     }
 
     function saveUser() {
       let selected = document.getElementById('user-select').value;
-      if (!selected) return alert("אנא בחר שם מהרשימה");
+      if (!selected) return alert("אנא בחר שם");
       localStorage.setItem('roomAppUser_v11', selected);
       currentUser = selected;
       showMainApp();
     }
-
-    function logout() {
-      localStorage.removeItem('roomAppUser_v11');
-      localStorage.removeItem('roomAppIsAdmin_v11');
-      location.reload();
-    }
+    function logout() { localStorage.removeItem('roomAppUser_v11'); localStorage.removeItem('roomAppIsAdmin_v11'); location.reload(); }
 
     function toggleAdminPrompt() {
       if (isAdmin) {
-        if (confirm("האם לצאת ממצב מנהל?")) {
-          isAdmin = false;
-          localStorage.setItem('roomAppIsAdmin_v11', 'false');
-          showMainApp();
-        }
+        if (confirm("לצאת ממצב מנהל?")) { isAdmin = false; localStorage.setItem('roomAppIsAdmin_v11', 'false'); showMainApp(); }
       } else {
-        let pass = prompt("הכנס סיסמת מנהל:");
-        if (pass === "1234") {
-          isAdmin = true;
-          localStorage.setItem('roomAppIsAdmin_v11', 'true');
-          alert("מצב מנהל הופעל בהצלחה!");
-          showMainApp();
-        } else if (pass !== null) {
-          alert("סיסמה שגויה.");
-        }
+        let pass = prompt("סיסמת מנהל:");
+        if (pass === "1234") { isAdmin = true; localStorage.setItem('roomAppIsAdmin_v11', 'true'); showMainApp(); }
       }
     }
 
     function showMainApp() {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('main-app').style.display = 'block';
-      document.getElementById('current-user-name').innerText = currentUser;
-      
-      let adminBadge = document.getElementById('admin-indicator');
-      let adminBtn = document.getElementById('admin-login-btn');
-      if (isAdmin) {
-        adminBadge.style.display = 'inline-block';
-        adminBtn.innerText = 'יציאה ממנהל 🔓';
-      } else {
-        adminBadge.style.display = 'none';
-        adminBtn.innerText = 'כניסת מנהל 🔒';
-      }
+      document.getElementById('current-user-name').innerText = getShortName(currentUser);
+      document.getElementById('admin-indicator').style.display = isAdmin ? 'inline-block' : 'none';
+      document.getElementById('admin-login-btn').innerText = isAdmin ? 'יציאה 🔓' : 'ניהול 🔒';
       loadDailyData();
     }
 
-    function changeDay(offset) {
-      currentDate.setDate(currentDate.getDate() + offset);
-      if (currentDate.getDay() === 6) currentDate.setDate(currentDate.getDate() + (offset > 0 ? 1 : -1));
-      loadDailyData();
-    }
-    function changeWeek(offset) { currentDate.setDate(currentDate.getDate() + (offset * 7)); loadDailyData(); }
-    function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); loadDailyData(); }
-    function resetToToday() {
-      currentDate = new Date();
-      if (currentDate.getDay() === 6) currentDate.setDate(currentDate.getDate() + 1);
-      loadDailyData();
-    }
-    function selectDayTab(targetDayIndex) {
-      let currentDay = currentDate.getDay();
-      if (currentDay === 6) currentDay = 0;
-      let diff = targetDayIndex - currentDay;
-      currentDate.setDate(currentDate.getDate() + diff);
-      loadDailyData();
-    }
-
-    function formatDate(date) {
-      let d = String(date.getDate()).padStart(2, '0');
-      let m = String(date.getMonth() + 1).padStart(2, '0');
-      return `${d}/${m}/${date.getFullYear()}`;
-    }
-    function formatDateShort(date) {
-      let d = String(date.getDate()).padStart(2, '0');
-      let m = String(date.getMonth() + 1).padStart(2, '0');
-      return `${d}/${m}`;
-    }
+    // ניווט זמנים (מקוצר)
+    function changeDay(o) { currentDate.setDate(currentDate.getDate() + o); if (currentDate.getDay()===6) currentDate.setDate(currentDate.getDate() + (o>0?1:-1)); loadDailyData(); }
+    function changeWeek(o) { currentDate.setDate(currentDate.getDate() + (o*7)); loadDailyData(); }
+    function resetToToday() { currentDate = new Date(); if (currentDate.getDay()===6) currentDate.setDate(currentDate.getDate() + 1); loadDailyData(); }
+    function selectDayTab(idx) { let c=currentDate.getDay(); if(c===6)c=0; currentDate.setDate(currentDate.getDate() + (idx-c)); loadDailyData(); }
+    function formatDate(d) { return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
 
     function renderDayTabs() {
-      let tabsContainer = document.getElementById('day-tabs');
-      tabsContainer.innerHTML = '';
-      let currentDayIdx = currentDate.getDay();
-      if (currentDayIdx === 6) currentDayIdx = 0;
-      let sunday = new Date(currentDate);
-      sunday.setDate(currentDate.getDate() - currentDayIdx);
-
+      let container = document.getElementById('day-tabs'); container.innerHTML = '';
+      let c = currentDate.getDay(); if(c===6) c=0;
+      let sunday = new Date(currentDate); sunday.setDate(currentDate.getDate() - c);
       for (let i = 0; i < 6; i++) {
-        let tabDate = new Date(sunday);
-        tabDate.setDate(sunday.getDate() + i);
-        let isCurrent = (i === currentDayIdx);
-        let activeClass = isCurrent ? 'active' : '';
-        tabsContainer.innerHTML += `
-          <div class="day-tab ${activeClass}" onclick="selectDayTab(${i})">
-            <span class="day-tab-name">${tabDaysNames[i]}</span>
-            <span class="day-tab-date">${formatDateShort(tabDate)}</span>
-          </div>`;
+        let td = new Date(sunday); td.setDate(sunday.getDate() + i);
+        let cls = (i === c) ? 'active' : '';
+        container.innerHTML += `<div class="day-tab ${cls}" onclick="selectDayTab(${i})"><span class="day-tab-name">${tabDaysNames[i]}</span><span class="day-tab-date">${String(td.getDate()).padStart(2,'0')}/${String(td.getMonth()+1).padStart(2,'0')}</span></div>`;
       }
     }
 
     function loadDailyData() {
       renderDayTabs();
-      let dateStr = formatDate(currentDate);
-      let dayName = sheetDaysHebrew[currentDate.getDay()];
-      document.getElementById('date-display').innerText = `יום ${dayName}, ${dateStr}`;
-      document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלת חדרים...</div>';
+      let dStr = formatDate(currentDate);
+      let dName = sheetDaysHebrew[currentDate.getDay()];
+      document.getElementById('date-display').innerText = `${dName}, ${dStr}`;
+      document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלה...</div>';
 
-      fetchGet({ action: 'getDailyData', dateStr: dateStr, dayName: dayName })
+      fetchGet({ action: 'getDailyData', dateStr: dStr, dayName: dName })
         .then(data => renderTable(data))
-        .catch(err => {
-          document.getElementById('table-container').innerHTML = `
-            <div class="error-box">
-              <p>⚠️ אירעה שגיאה בטעינת הטבלה משרת הנתונים.</p>
-              <button class="nav-btn-sm btn-today" onclick="loadDailyData()">לחץ לרענון</button>
-            </div>`;
-        });
+        .catch(err => { document.getElementById('table-container').innerHTML = `<p style="text-align:center; color:red;">שגיאת שרת.</p>`; });
     }
 
     function renderTable(data) {
       let container = document.getElementById('table-container');
-      if (!data || !data.rooms || data.rooms.length === 0) {
-        container.innerHTML = "<p style='text-align:center;'>אין פעילות מתוכננת ביום זה.</p>";
-        return;
-      }
+      if (!data || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
 
       let tzfiraCount = data.rooms.filter(r => r.includes('הצפירה')).length;
-      let totalRooms = data.rooms.length;
-
       let html = '<div class="table-wrapper"><table><thead><tr><th class="time-col">שעה</th>';
-      data.rooms.forEach(room => {
-        let headerClass = room.includes('הצפירה') ? 'th-tzfira' : 'th-keren';
-        html += `<th class="${headerClass}">${room}</th>`;
-      });
+      data.rooms.forEach(r => { html += `<th class="${r.includes('הצפירה')?'th-tzfira':'th-keren'}">${r}</th>`; });
       html += '</tr></thead><tbody>';
 
       let rendered16Block = false;
-
       data.timeRows.forEach(row => {
         let t = row.time;
         if (data.isSunday && !data.isMeetingReleased) {
           if (t === '10:00') {
-            html += `<tr><td class="time-col" style="z-index: 12 !important;">10:00-12:00</td>`;
-            html += `<td colspan="${totalRooms}" rowspan="2" class="cell-staff-meeting">
-              👥 ישיבת צוות
-              ${isAdmin ? `<br><button class="btn-action btn-release" style="margin-top:8px;" onclick="toggleStaffMeeting('Released')">שחרר ישיבת צוות (אדמין)</button>` : ''}
-            </td></tr>`;
-            return;
+            html += `<tr><td class="time-col">10:00</td><td colspan="${data.rooms.length}" rowspan="2" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-action btn-release" onclick="toggleStaffMeeting('Released')">שחרר (אדמין)</button>` : ''}</td></tr>`; return;
           }
-          if (t === '11:00') {
-            html += `<tr><td class="time-col" style="display:none;">11:00</td></tr>`;
-            return;
-          }
+          if (t === '11:00') return;
         }
 
-        if (data.isSunday && data.isMeetingReleased && t === '10:00' && isAdmin) {
-          html += `<tr><td class="time-col" style="background:#f3e8ff;">מנהל</td><td colspan="${totalRooms}" style="background:#f3e8ff; padding:4px;"><button class="btn-action btn-book" onclick="toggleStaffMeeting('Locked')">החזר נעילת ישיבת צוות (אדמין)</button></td></tr>`;
-        }
-
-        let rowClass = (t === '15:30') ? 'row-half-hour' : '';
-        html += `<tr class="${rowClass}"><td class="time-col">${t}</td>`;
+        let rCls = (t === '15:30') ? 'row-half-hour' : '';
+        html += `<tr class="${rCls}"><td class="time-col">${t}</td>`;
 
         data.rooms.forEach(room => {
-          let isKeren = room.includes('קרן היסוד');
-          let isTzfira = room.includes('הצפירה');
-
-          if (isKeren && t === '15:30') return; 
-          if (isTzfira && t > '15:30') {
-            if (!rendered16Block && t === '16:00') {
-              html += `<td colspan="${tzfiraCount}" rowspan="4" class="cell-unavailable">סגור</td>`;
-            }
-            return;
-          }
+          let isK = room.includes('קרן'); let isT = room.includes('הצפירה');
+          if (isK && t === '15:30') return; 
+          if (isT && t > '15:30') { if (!rendered16Block && t === '16:00') { html += `<td colspan="${tzfiraCount}" rowspan="4" class="cell-unavailable">סגור</td>`; } return; }
 
           let cell = row.cells[room] || { status: 'unavailable', occupant: 'לא זמין' };
-          let isMyBooking = checkIsMine(cell.occupant);
-          let cellClass = isTzfira ? 'td-td-tzfira' : 'td-keren';
-          let rowspanAttr = (isKeren && t === '15:00') ? 'rowspan="2"' : '';
+          let isMine = checkIsMine(cell.occupant);
+          let cCls = isT ? 'td-tzfira' : 'td-keren';
+          let rs = (isK && t === '15:00') ? 'rowspan="2"' : '';
 
           if (cell.status === 'free') {
-            html += `<td ${rowspanAttr} class="${cellClass} cell-free">פנוי<br><button class="btn-action btn-book" onclick="bookRoom('${t}', '${room}')">+ להירשם</button></td>`;
+            html += `<td ${rs} class="${cCls} cell-free" onclick="initBook('${t}', '${room}')"><span style="font-size:16px;">+</span></td>`;
           } else if (cell.status === 'unavailable') {
-            html += `<td ${rowspanAttr} class="cell-unavailable">${cell.occupant}</td>`;
+            html += `<td ${rs} class="cell-unavailable">${cell.occupant}</td>`;
           } else {
-            let badgeClass = isMyBooking ? 'badge-mine' : (isTzfira ? 'badge-tzfira' : 'badge-keren');
-            let cellContent = `<div class="name-badge ${badgeClass}">${cell.occupant}</div>`;
-
-            if (isMyBooking) {
-              cellContent += `<br><button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
-            } else if (isAdmin) {
-              cellContent += `<br><button class="btn-action btn-release" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר</button>`;
-            }
-            html += `<td ${rowspanAttr} class="${cellClass}">${cellContent}</td>`;
+            let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
+            // כאן המקום בו אנו מציגים את השם הקצר בלבד
+            let displayOcc = getShortName(cell.occupant); 
+            let content = `<div class="name-badge ${bCls}">${displayOcc}</div>`;
+            if (isMine) content += `<br><button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
+            else if (isAdmin) content += `<br><button class="btn-action btn-release" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר (מנהל)</button>`;
+            html += `<td ${rs} class="${cCls}">${content}</td>`;
           }
         });
         if (t > '15:30') rendered16Block = true;
         html += '</tr>';
       });
-      html += '</tbody></table></div>';
-      container.innerHTML = html;
+      container.innerHTML = html + '</tbody></table></div>';
     }
 
-    function checkIsMine(occupant) {
-      if (!occupant || !currentUser) return false;
-      if (occupant === currentUser) return true;
-      let parts = currentUser.split(/[\s\-]+/);
-      for (let p of parts) { if (p.length >= 2 && occupant.includes(p)) return true; }
-      return false;
+    function checkIsMine(occ) { return occ && currentUser && occ.includes(currentUser.split(" ")[0]); }
+
+    function initBook(time, room) {
+      if (isAdmin) {
+        pendingBookTime = time; pendingBookRoom = room;
+        document.getElementById('modal-title-text').innerText = `שיבוץ: ${room} בשעה ${time}`;
+        document.getElementById('modal-user-select').value = currentUser; // ברירת מחדל לאדמין עצמו
+        document.getElementById('admin-modal').style.display = 'flex';
+      } else {
+        document.getElementById('table-container').innerHTML = '<div class="loader">רושם...</div>';
+        fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Booked', user: currentUser }).then(()=>loadDailyData());
+      }
     }
 
-    function toggleStaffMeeting(status) {
-      if (confirm(`כמנהל, האם ברצונך לשנות את ישיבת הצוות?`)) {
-        document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן...</div>';
-        fetchPost({ action: 'updateMeeting', dateStr: formatDate(currentDate), status: status, user: `${currentUser} (מנהל)` })
-          .then(() => loadDailyData())
-          .catch(err => { alert("שגיאה"); loadDailyData(); });
+    function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
+
+    function submitAdminBooking() {
+      let selectedUser = document.getElementById('modal-user-select').value;
+      let bookingType = document.querySelector('input[name="booking-type"]:checked').value;
+      closeAdminModal();
+      document.getElementById('table-container').innerHTML = '<div class="loader">רושם...</div>';
+      
+      if (bookingType === 'onetime') {
+        fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: pendingBookTime, room: pendingBookRoom, status: 'Booked', user: selectedUser }).then(()=>loadDailyData());
+      } else {
+        // שיבוץ קבוע
+        let dName = sheetDaysHebrew[currentDate.getDay()];
+        fetchPost({ action: 'updatePermanentRoom', dayName: dName, time: pendingBookTime, room: pendingBookRoom, user: selectedUser }).then(()=>loadDailyData()).catch(e=>{alert(e); loadDailyData();});
       }
     }
 
     function releaseRoom(time, room) {
-      if (confirm("האם לשחרר את החדר?")) {
-        document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן...</div>';
-        fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Free', user: currentUser })
-          .then(() => loadDailyData()).catch(err => loadDailyData());
-      }
+      if(confirm("לשחרר?")) { document.getElementById('table-container').innerHTML = '<div class="loader">משחרר...</div>'; fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Free', user: currentUser }).then(()=>loadDailyData()); }
     }
-
-    function releaseRoomAdmin(time, room, originalUser) {
-      if (confirm(`כמנהל, האם לשחרר את החדר המשובץ ל-${originalUser}?`)) {
-        document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן אדמין...</div>';
-        fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Free', user: `${currentUser} (מנהל)` })
-          .then(() => loadDailyData()).catch(err => loadDailyData());
-      }
+    function releaseRoomAdmin(time, room, origUser) {
+      if(confirm(`לשחרר חדר של ${origUser}?`)) { document.getElementById('table-container').innerHTML = '<div class="loader">משחרר...</div>'; fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Free', user: `${currentUser} (מנהל)` }).then(()=>loadDailyData()); }
     }
-
-    function bookRoom(time, room) {
-      document.getElementById('table-container').innerHTML = '<div class="loader">רושם...</div>';
-      fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Booked', user: currentUser })
-        .then(() => loadDailyData()).catch(err => loadDailyData());
-    }
+    function toggleStaffMeeting(s) { document.getElementById('table-container').innerHTML = '<div class="loader">מעדכן...</div>'; fetchPost({ action: 'updateMeeting', dateStr: formatDate(currentDate), status: s, user: currentUser }).then(()=>loadDailyData()); }
   </script>
 </body>
 </html>
