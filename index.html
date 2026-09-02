@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <!-- GET A ROOM -->
-  <title>מערכת שיבוץ חדרים</title>
+  <title>GET A ROOM</title>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Hebrew, sans-serif; }
     
-    /* שוליים חיצוניים אחידים לכל המסך בטלפון */
     body { background-color: #f8fafc; margin: 0; padding: 2px; color: #0f172a; }
     .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 4px; border-radius: 8px; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
     
-    /* מכולת לוגו וכותרת ראשית */
     .app-brand-header { text-align: center; padding: 4px 0 2px 0; }
     .app-logo { max-height: 45px; width: auto; margin-bottom: 2px; }
     h2 { margin: 0; text-align: center; font-size: 17px; color: #1e293b; font-weight: 800; }
@@ -24,7 +21,6 @@
     .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px; padding: 2px 4px 6px 4px; border-bottom: 1px solid #e2e8f0; }
     .admin-badge { background: #dc2626; color: white; padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-right: 6px; }
     
-    /* סרגל ניווט תאריכים - צמצום המרווח התחתון ל-2px בלבד */
     .nav-container { background: #f1f5f9; padding: 6px; border-radius: 8px; margin-bottom: 2px; }
     .nav-top-row { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 6px; }
     .nav-btn-sm { width: auto; padding: 4px 6px; font-size: 10px; border-radius: 4px; margin: 0; background-color: #e2e8f0; color: #334155; }
@@ -41,7 +37,6 @@
     .date-title { font-weight: 800; font-size: 14px; color: #1e293b; }
     .day-step-btn { width: auto; padding: 4px 8px; font-size: 10px; margin: 0; background-color: #2563eb; }
 
-    /* יישור רוחב הטבלה והשוליים בדיוק לסרגל העליון */
     .table-wrapper { overflow-x: auto; max-height: 72vh; width: 100%; margin: 0; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
     table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
     
@@ -90,11 +85,9 @@
 <body>
 
   <div id="login-screen" class="container" style="max-width:400px; padding: 20px;">
-    <!-- מכלול לוגו / כותרת בהתחברות -->
     <div class="app-brand-header">
-      <!-- אם יש לינק לתמונת לוגו, בטל את ההערה מהשורה למטה והכנס את הקישור לתמונה -->
-      <!-- <img src="https://example.com/logo.png" alt="לוגו" class="app-logo"> -->
-      <h2>מערכת שיבוץ חדרים</h2>
+      <img src="logo1.png" alt="לוגו" class="app-logo">
+      <h2>GET A ROOM</h2>
     </div>
     <p style="text-align:center; font-size: 14px;">בחר את שמך להתחברות:</p>
     <select id="user-select"><option value="">טוען עובדים...</option></select>
@@ -102,10 +95,9 @@
   </div>
 
   <div id="main-app" class="container">
-    <!-- כותרת מותג עליונה -->
     <div class="app-brand-header">
-      <!-- <img src="https://example.com/logo.png" alt="לוגו" class="app-logo"> -->
-      <h2>מערכת שיבוץ חדרים</h2>
+      <img src="logo1.png" alt="לוגו" class="app-logo">
+      <h2>GET A ROOM</h2>
     </div>
 
     <div class="user-header">
@@ -136,7 +128,6 @@
     <div id="table-container" class="loader">טוען טבלה...</div>
   </div>
 
-  <!-- Modal Admin Booking -->
   <div id="admin-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 class="modal-title" id="modal-title-text">שיבוץ חדר כאדמין</h3>
