@@ -11,28 +11,28 @@
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Hebrew, sans-serif; }
     
-    /* איפוס שוליים מלא */
     body { background-color: #f8fafc; margin: 0; padding: 0; color: #0f172a; }
     .container { max-width: 100%; margin: 0 auto; background: #ffffff; padding: 0; border-radius: 0; box-shadow: none; }
     
-    /* הדר מותג: לוגו 68 פיקסלים, מרווח של כ-3 אותיות (14px) */
+    /* הדר מותג: הלוגו משמאל (בגלל RTL, האלמנט השני יופיע משמאל) */
     .app-brand-header { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 4px 4px 4px; }
-    .app-logo { max-height: 68px; width: auto; }
     h2 { margin: 0; font-size: 20px; color: #1e293b; font-weight: 800; line-height: 1; }
+    .app-logo { max-height: 68px; width: auto; }
     
     select, button, input { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; }
     button { background-color: #2563eb; color: white; border: none; cursor: pointer; font-weight: 600; }
     button:active { transform: scale(0.98); }
     
-    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 4px; padding: 2px 6px; border-bottom: 1px solid #e2e8f0; }
+    .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 2px; padding: 2px 6px; border-bottom: 1px solid #e2e8f0; }
     .admin-badge { background: #dc2626; color: white; padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-right: 6px; }
     
-    /* סרגל ניווט צמוד כמעט לגמרי לטבלה */
-    .nav-container { background: #f1f5f9; padding: 4px; border-radius: 4px; margin-bottom: 2px; }
+    /* סרגל ניווט מרווח מינימלי (30% מהקודם) */
+    .nav-container { background: #f1f5f9; padding: 4px; border-radius: 4px; margin-bottom: 1px; }
+    
+    /* כפתורי הניווט הוגדלו ב-25% לגובה ע"י שינוי ריפוד פנימי */
     .nav-top-row { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 4px; }
-    .nav-btn-sm { width: auto; padding: 4px 6px; font-size: 10px; border-radius: 4px; margin: 0; background-color: #e2e8f0; color: #334155; }
+    .nav-btn-sm { width: auto; padding: 8px 6px; font-size: 10px; border-radius: 4px; margin: 0; background-color: #e2e8f0; color: #334155; }
     .btn-today { background-color: #0284c7; color: white; font-weight: 700; }
-    .btn-admin-login { background-color: #475569; color: white; }
     
     .day-tabs { display: flex; gap: 2px; justify-content: space-between; overflow-x: auto; padding-bottom: 2px; margin-bottom: 4px; border-bottom: 2px solid #cbd5e1; }
     .day-tab { flex: 1; min-width: 45px; text-align: center; padding: 4px 1px; border-radius: 4px 4px 0 0; background: #e2e8f0; color: #475569; cursor: pointer; }
@@ -40,12 +40,12 @@
     .day-tab-date { font-size: 9px; opacity: 0.85; }
     .day-tab.active { background: #2563eb; color: white; }
     
+    /* כפתורי התאריך הוגדלו לגובה */
     .date-title-bar { display: flex; justify-content: space-between; align-items: center; }
     .date-title { font-weight: 800; font-size: 14px; color: #1e293b; }
-    .day-step-btn { width: auto; padding: 4px 8px; font-size: 10px; margin: 0; background-color: #2563eb; }
+    .day-step-btn { width: auto; padding: 8px 8px; font-size: 10px; margin: 0; background-color: #2563eb; }
 
-    /* הגדרות טבלה לשמירת גובה אחיד של 45 פיקסלים */
-    .table-wrapper { overflow-x: auto; max-height: 76vh; width: 100%; margin-top: 2px; border: 1px solid #cbd5e1; border-radius: 0; background: white; }
+    .table-wrapper { overflow-x: auto; max-height: 76vh; width: 100%; margin-top: 1px; border: 1px solid #cbd5e1; border-radius: 0; background: white; }
     table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; text-align: center; }
     
     th, td { border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; padding: 1px; min-width: 75px; height: 45px; max-height: 45px; vertical-align: middle; }
@@ -56,36 +56,36 @@
     th.th-tzfira, td.td-tzfira { background-color: #fffbeef0; }
     th.th-tzfira { background-color: #fef9c3 !important; color: #713f12 !important; border-bottom: 2px solid #eab308 !important; }
     
-    /* עמודת שעה מוגדלת (48px) וטקסט מוגדל */
     th.time-col, td.time-col { 
       min-width: 48px; width: 48px; font-weight: 800; font-size: 12px; background-color: #f8fafc !important; 
       position: sticky; right: 0; z-index: 11; border-left: 2px solid #cbd5e1; box-shadow: -1px 0 2px rgba(0,0,0,0.1);
     }
     th.time-col { z-index: 15 !important; background-color: #e2e8f0 !important; font-size: 13px; }
 
-    tr.row-half-hour { height: 20px !important; }
-    tr.row-half-hour td { height: 20px !important; max-height: 20px; font-size: 10px; }
+    /* עיצוב שורות חצי-שעה (15:00 ו-15:30) שוות יחד לשורה אחת */
+    tr.row-half-hour { height: 22.5px !important; }
+    tr.row-half-hour td, tr.row-half-hour th { height: 22.5px !important; max-height: 22.5px !important; }
+    tr.row-half-hour .badge-only { height: 20px !important; font-size: 10px; }
     .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; }
 
-    /* הגדרות כלליות לתגית השם */
-    .name-badge { display: flex; align-items: center; justify-content: center; margin: 0 auto; padding: 0 4px; border-radius: 4px; font-weight: 700; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* הגדרות כלליות לשמות */
+    .name-badge { display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 4px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .badge-keren { background-color: #9333ea; color: #ffffff; }
     .badge-tzfira { background-color: #d97706; color: #ffffff; }
     .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
 
-    /* 1. תא עם שם בלבד: נמתח לגובה 38px ורוחב 90%, משאיר שוליים סימטריים לחלוטין */
-    .badge-only { width: 90%; height: 38px; }
+    /* תא עם שם בלבד: רוחב 90%, גובה 93% */
+    .badge-only { width: 90%; height: 93%; font-size: 13px; }
 
-    /* 2. תא של המשתמש/אדמין: מכולה פנימית המכילה את השם (בגובהו המקורי) וכפתור השחרור */
-    .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 2px; }
-    .badge-with-btn { width: 90%; height: 20px; }
-    .btn-action { padding: 0; font-size: 10px; margin: 0; border-radius: 4px; width: 90%; height: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
-    .btn-release { background-color: #ef4444; color: white; border: none; cursor: pointer; }
+    /* תא של המשתמש: כפתור שחרור הוקטן ב-25% (מ-90% ל-65%) */
+    .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 93%; width: 100%; gap: 2px; }
+    .badge-with-btn { width: 90%; flex-grow: 1; font-size: 11px; min-height: 20px; }
+    .btn-release-custom { background-color: #ef4444; color: white; border: none; padding: 0; font-size: 10px; font-weight: bold; border-radius: 4px; width: 65%; height: 16px; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* עיצוב תא פנוי: טקסט 'פנוי' ירוק + כפתור פלוס מרובע לחלוטין */
-    .cell-free-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 2px; }
-    .cell-free-text { font-size: 10px; color: #047857; font-weight: 700; line-height: 1; }
-    .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; }
+    /* תא פנוי: פנוי ופלוס זה לצד זה */
+    .cell-free-container { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 5px; }
+    .cell-free-text { font-size: 11px; color: #047857; font-weight: 700; }
+    .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; margin: 0; }
     .btn-book-plus:active { background-color: #059669; }
 
     .cell-unavailable { background-color: #f1f5f9 !important; color: #94a3b8; font-size: 10px; }
@@ -106,8 +106,8 @@
 
   <div id="login-screen" class="container" style="max-width:400px; padding: 20px; margin: 20px auto;">
     <div class="app-brand-header">
-      <img src="logo1.png" alt="לוגו" class="app-logo">
       <h2>GET A ROOM</h2>
+      <img src="logo1.png" alt="לוגו" class="app-logo">
     </div>
     <p style="text-align:center; font-size: 14px;">בחר את שמך להתחברות:</p>
     <select id="user-select"><option value="">טוען עובדים...</option></select>
@@ -116,8 +116,8 @@
 
   <div id="main-app" class="container">
     <div class="app-brand-header">
-      <img src="logo1.png" alt="לוגו" class="app-logo">
       <h2>GET A ROOM</h2>
+      <img src="logo1.png" alt="לוגו" class="app-logo">
     </div>
 
     <div class="user-header">
@@ -329,12 +329,13 @@
         let t = row.time;
         if (data.isSunday && !data.isMeetingReleased) {
           if (t === '10:00') {
-            html += `<tr><td class="time-col">10:00</td><td colspan="${data.rooms.length}" rowspan="2" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-action btn-release" onclick="toggleStaffMeeting('Released')">שחרר (אדמין)</button>` : ''}</td></tr>`; return;
+            html += `<tr><td class="time-col">10:00</td><td colspan="${data.rooms.length}" rowspan="2" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-custom" style="width: auto; padding: 2px 8px; font-size:12px; margin-top:4px;" onclick="toggleStaffMeeting('Released')">שחרר (אדמין)</button>` : ''}</td></tr>`; return;
           }
           if (t === '11:00') return;
         }
 
-        let rCls = (t === '15:30') ? 'row-half-hour' : '';
+        /* שורות 15:00 ו-15:30 מקבלות מחלקת חצי-גובה */
+        let rCls = (t === '15:00' || t === '15:30') ? 'row-half-hour' : '';
         html += `<tr class="${rCls}"><td class="time-col">${t}</td>`;
 
         data.rooms.forEach(room => {
@@ -345,6 +346,8 @@
           let cell = row.cells[room] || { status: 'unavailable', occupant: 'לא זמין' };
           let isMine = checkIsMine(cell.occupant);
           let cCls = isT ? 'td-tzfira' : 'td-keren';
+          
+          /* בקרן 15:00 שולבה לשתי שורות (15:00 ו-15:30), לכן rowspan=2, וביחד הם יתנו גובה שורה מלא */
           let rs = (isK && t === '15:00') ? 'rowspan="2"' : '';
 
           if (cell.status === 'free') {
@@ -360,14 +363,13 @@
             let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
             let displayOcc = getShortName(cell.occupant); 
             
-            // פיצול בין תא ששייך לי/לאדמין (עם שחרור) לתא של מישהו אחר (שם בלבד)
             if (isMine || isAdmin) {
                 let content = `<div class="occupied-container">`;
                 content += `<div class="name-badge badge-with-btn ${bCls}">${displayOcc}</div>`;
                 if (isMine) {
-                    content += `<button class="btn-action btn-release" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
+                    content += `<button class="btn-release-custom" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
                 } else {
-                    content += `<button class="btn-action btn-release" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר (מנהל)</button>`;
+                    content += `<button class="btn-release-custom" onclick="releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">שחרר (מנהל)</button>`;
                 }
                 content += `</div>`;
                 html += `<td ${rs} class="${cCls}">${content}</td>`;
