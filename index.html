@@ -3,10 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  
+  <!-- הגדרות לאפליקציית רשת (PWA) כדי שהלוגו יופיע במסך הבית -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="GET A ROOM">
+  
   <title>GET A ROOM</title>
   
-  <link rel="icon" href="logo1.png">
-  <link rel="apple-touch-icon" href="logo1.png">
+  <!-- הפניה מפורשת לקובץ התמונה לטובת אייקון באנדרואיד ואייפון -->
+  <link rel="icon" type="image/png" href="./logo1.png">
+  <link rel="apple-touch-icon" href="./logo1.png">
   
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Hebrew, sans-serif; }
@@ -58,18 +66,15 @@
     }
     th.time-col { z-index: 15 !important; background-color: #e2e8f0 !important; font-size: 13px; }
 
-    /* שורות חצי-שעה */
     tr.row-half-hour { height: 22.5px !important; }
     tr.row-half-hour td:not([rowspan]), tr.row-half-hour th { height: 22.5px !important; max-height: 22.5px !important; }
     tr.row-half-hour td:not([rowspan]) .badge-full { height: 20px !important; font-size: 10px !important; }
     
-    /* החרגת תא ממוזג (rowspan=2) בקרן היסוד - חזרה למידות רגילות */
     td[rowspan="2"] { height: 45px !important; max-height: 45px !important; }
     td[rowspan="2"] .badge-full { height: 93% !important; font-size: 13px !important; }
 
     .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; position: relative; }
 
-    /* עיצוב אחיד לכל התאים התפוסים */
     .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
     
     .badge-full { position: relative; width: 90%; height: 93%; font-size: 13px; display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 4px; font-weight: 700; }
@@ -77,21 +82,16 @@
     .badge-tzfira { background-color: #d97706; color: #ffffff; }
     .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
 
-    /* הטקסט בתוך התיבה */
     .badge-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; width: 100%; text-align: center; line-height: 1.2; }
-    /* כשיש כפתור X בצד שמאל, נדחוף את הטקסט קצת ימינה כדי שלא יוסתר */
     .badge-text-with-btn { padding-left: 18px; padding-right: 2px; }
 
-    /* עיצוב כפתורי ה-X */
     .btn-release-x { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border: none; border-radius: 3px; font-weight: 900; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.3); z-index: 5; }
     .btn-x-red { background-color: #ef4444; color: white; }
-    .btn-x-turq { background-color: #0cb0a9; color: white; } /* צבע טורקיז בולט */
+    .btn-x-turq { background-color: #0cb0a9; color: white; } 
 
-    /* הקטנת טקסט לשמות ארוכים */
     .text-sm-long { font-size: 10px !important; letter-spacing: -0.3px; }
     .text-xs-long { font-size: 9px !important; letter-spacing: -0.4px; }
 
-    /* תא פנוי: פנוי ופלוס זה לצד זה */
     .cell-free-container { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 5px; }
     .cell-free-text { font-size: 11px; color: #047857; font-weight: 700; }
     .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; margin: 0; }
@@ -116,7 +116,7 @@
   <div id="login-screen" class="container" style="max-width:400px; padding: 20px; margin: 20px auto;">
     <div class="app-brand-header">
       <h2>GET A ROOM</h2>
-      <img src="logo1.png" alt="לוגו" class="app-logo">
+      <img src="./logo1.png" alt="לוגו" class="app-logo">
     </div>
     <p style="text-align:center; font-size: 14px;">בחר את שמך להתחברות:</p>
     <select id="user-select"><option value="">טוען עובדים...</option></select>
@@ -126,7 +126,7 @@
   <div id="main-app" class="container">
     <div class="app-brand-header">
       <h2>GET A ROOM</h2>
-      <img src="logo1.png" alt="לוגו" class="app-logo">
+      <img src="./logo1.png" alt="לוגו" class="app-logo">
     </div>
 
     <div class="user-header">
@@ -209,6 +209,9 @@
 
     let pendingBookTime = "";
     let pendingBookRoom = "";
+    
+    // משתנה גלובלי לשמירת מצב הטבלה הנוכחי
+    window.currentDailyData = null;
 
     window.onload = function() {
       fetchGet({ action: 'getEmployees' }).then(data => {
@@ -320,7 +323,10 @@
       document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלה...</div>';
 
       fetchGet({ action: 'getDailyData', dateStr: dStr, dayName: dName })
-        .then(data => renderTable(data))
+        .then(data => {
+            window.currentDailyData = data;
+            renderTable(data);
+        })
         .catch(err => { document.getElementById('table-container').innerHTML = `<p style="text-align:center; color:red;">שגיאת שרת.</p>`; });
     }
 
@@ -370,7 +376,6 @@
             let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
             let displayOcc = getShortName(cell.occupant); 
             
-            // חישוב הקטנת פונט לשמות ארוכים
             let fontClass = '';
             if (displayOcc.length > 12) {
               fontClass = 'text-xs-long';
@@ -378,7 +383,6 @@
               fontClass = 'text-sm-long';
             }
             
-            // האם יש כפתור X? 
             let hasBtn = isMine || isAdmin;
             let textClass = hasBtn ? 'badge-text badge-text-with-btn' : 'badge-text';
 
@@ -387,10 +391,8 @@
             content += `<span class="${textClass}">${displayOcc}</span>`;
             
             if (isMine) {
-                // X אדום לעצמי
                 content += `<button class="btn-release-x btn-x-red" onclick="event.stopPropagation(); releaseRoom('${t}', '${room}')">&#10005;</button>`;
             } else if (isAdmin) {
-                // X טורקיז לאדמין עבור אחרים
                 content += `<button class="btn-release-x btn-x-turq" onclick="event.stopPropagation(); releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">&#10005;</button>`;
             }
             
@@ -413,6 +415,25 @@
         document.getElementById('modal-user-select').value = currentUser;
         document.getElementById('admin-modal').style.display = 'flex';
       } else {
+        // התראת אישור על כפילויות לפני השיבוץ
+        if (window.currentDailyData && window.currentDailyData.timeRows) {
+            let timeRow = window.currentDailyData.timeRows.find(r => r.time === time);
+            if (timeRow) {
+                let alreadyHasRoom = false;
+                for (let r in timeRow.cells) {
+                    if (checkIsMine(timeRow.cells[r].occupant)) {
+                        alreadyHasRoom = true;
+                        break;
+                    }
+                }
+                if (alreadyHasRoom) {
+                    if (!confirm("כבר יש לך חדר משוריין בשעה זו. האם אתה בטוח שברצונך לשבץ חדר נוסף?")) {
+                        return; // עצירת הפעולה אם המשתמש התחרט
+                    }
+                }
+            }
+        }
+        
         document.getElementById('table-container').innerHTML = '<div class="loader">רושם...</div>';
         fetchPost({ action: 'updateRoom', dateStr: formatDate(currentDate), time: time, room: room, status: 'Booked', user: currentUser }).then(()=>loadDailyData());
       }
