@@ -2,7 +2,7 @@
 <html dir="rtl" lang="he">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>GET A ROOM</title>
   
   <link rel="icon" href="logo1.png">
@@ -14,7 +14,6 @@
     body { background-color: #f8fafc; margin: 0; padding: 0; color: #0f172a; }
     .container { max-width: 100%; margin: 0 auto; background: #ffffff; padding: 0; border-radius: 0; box-shadow: none; }
     
-    /* הדר מותג: הלוגו משמאל (בגלל RTL, האלמנט השני יופיע משמאל) */
     .app-brand-header { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 4px 4px 4px; }
     h2 { margin: 0; font-size: 20px; color: #1e293b; font-weight: 800; line-height: 1; }
     .app-logo { max-height: 68px; width: auto; }
@@ -26,10 +25,8 @@
     .user-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 2px; padding: 2px 6px; border-bottom: 1px solid #e2e8f0; }
     .admin-badge { background: #dc2626; color: white; padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-right: 6px; }
     
-    /* סרגל ניווט מרווח מינימלי (30% מהקודם) */
     .nav-container { background: #f1f5f9; padding: 4px; border-radius: 4px; margin-bottom: 1px; }
     
-    /* כפתורי הניווט הוגדלו ב-25% לגובה ע"י שינוי ריפוד פנימי */
     .nav-top-row { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 4px; }
     .nav-btn-sm { width: auto; padding: 8px 6px; font-size: 10px; border-radius: 4px; margin: 0; background-color: #e2e8f0; color: #334155; }
     .btn-today { background-color: #0284c7; color: white; font-weight: 700; }
@@ -40,7 +37,6 @@
     .day-tab-date { font-size: 9px; opacity: 0.85; }
     .day-tab.active { background: #2563eb; color: white; }
     
-    /* כפתורי התאריך הוגדלו לגובה */
     .date-title-bar { display: flex; justify-content: space-between; align-items: center; }
     .date-title { font-weight: 800; font-size: 14px; color: #1e293b; }
     .day-step-btn { width: auto; padding: 8px 8px; font-size: 10px; margin: 0; background-color: #2563eb; }
@@ -62,27 +58,32 @@
     }
     th.time-col { z-index: 15 !important; background-color: #e2e8f0 !important; font-size: 13px; }
 
-    /* עיצוב שורות חצי-שעה (15:00 ו-15:30) שוות יחד לשורה אחת */
+    /* שורות חצי-שעה */
     tr.row-half-hour { height: 22.5px !important; }
-    tr.row-half-hour td, tr.row-half-hour th { height: 22.5px !important; max-height: 22.5px !important; }
-    tr.row-half-hour .badge-only { height: 20px !important; font-size: 10px; }
+    tr.row-half-hour td:not([rowspan]), tr.row-half-hour th { height: 22.5px !important; max-height: 22.5px !important; }
+    tr.row-half-hour td:not([rowspan]) .badge-only { height: 20px !important; font-size: 10px !important; }
+    
+    /* החרגת תא ממוזג (rowspan=2) משורת חצי-שעה כדי שתוצג תגית במידות מלאות */
+    td[rowspan="2"] { height: 45px !important; max-height: 45px !important; }
+    td[rowspan="2"] .badge-only { height: 93% !important; font-size: 12px !important; }
+
     .cell-staff-meeting { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 13px; font-weight: 800; border: 2px solid #c084fc !important; }
 
-    /* הגדרות כלליות לשמות */
     .name-badge { display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 4px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .badge-keren { background-color: #9333ea; color: #ffffff; }
     .badge-tzfira { background-color: #d97706; color: #ffffff; }
     .badge-mine { background-color: #2563eb; color: #ffffff; border: 2px solid #1d4ed8; }
 
-    /* תא עם שם בלבד: רוחב 90%, גובה 93% */
-    .badge-only { width: 90%; height: 93%; font-size: 13px; }
+    /* התאמת גודל טקסט לפי אורך השם למניעת חריגה */
+    .text-sm-long { font-size: 10px !important; letter-spacing: -0.3px; }
+    .text-xs-long { font-size: 9px !important; letter-spacing: -0.4px; }
 
-    /* תא של המשתמש: כפתור שחרור הוקטן ב-25% (מ-90% ל-65%) */
+    .badge-only { width: 90%; height: 93%; font-size: 12px; }
+
     .occupied-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 93%; width: 100%; gap: 2px; }
     .badge-with-btn { width: 90%; flex-grow: 1; font-size: 11px; min-height: 20px; }
     .btn-release-custom { background-color: #ef4444; color: white; border: none; padding: 0; font-size: 10px; font-weight: bold; border-radius: 4px; width: 65%; height: 16px; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* תא פנוי: פנוי ופלוס זה לצד זה */
     .cell-free-container { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 5px; }
     .cell-free-text { font-size: 11px; color: #047857; font-weight: 700; }
     .btn-book-plus { background-color: #10b981; color: white; border: none; padding: 0; display: flex; align-items: center; justify-content: center; height: 24px; width: 24px; font-size: 16px; font-weight: 800; border-radius: 4px; cursor: pointer; margin: 0; }
@@ -334,7 +335,6 @@
           if (t === '11:00') return;
         }
 
-        /* שורות 15:00 ו-15:30 מקבלות מחלקת חצי-גובה */
         let rCls = (t === '15:00' || t === '15:30') ? 'row-half-hour' : '';
         html += `<tr class="${rCls}"><td class="time-col">${t}</td>`;
 
@@ -347,7 +347,6 @@
           let isMine = checkIsMine(cell.occupant);
           let cCls = isT ? 'td-tzfira' : 'td-keren';
           
-          /* בקרן 15:00 שולבה לשתי שורות (15:00 ו-15:30), לכן rowspan=2, וביחד הם יתנו גובה שורה מלא */
           let rs = (isK && t === '15:00') ? 'rowspan="2"' : '';
 
           if (cell.status === 'free') {
@@ -363,9 +362,17 @@
             let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
             let displayOcc = getShortName(cell.occupant); 
             
+            // חישוב הקטנת פונט לשמות ארוכים בלבד
+            let fontClass = '';
+            if (displayOcc.length > 12) {
+              fontClass = 'text-xs-long';
+            } else if (displayOcc.length > 8) {
+              fontClass = 'text-sm-long';
+            }
+
             if (isMine || isAdmin) {
                 let content = `<div class="occupied-container">`;
-                content += `<div class="name-badge badge-with-btn ${bCls}">${displayOcc}</div>`;
+                content += `<div class="name-badge badge-with-btn ${bCls} ${fontClass}">${displayOcc}</div>`;
                 if (isMine) {
                     content += `<button class="btn-release-custom" onclick="releaseRoom('${t}', '${room}')">שחרר</button>`;
                 } else {
@@ -374,7 +381,7 @@
                 content += `</div>`;
                 html += `<td ${rs} class="${cCls}">${content}</td>`;
             } else {
-                let content = `<div class="name-badge badge-only ${bCls}">${displayOcc}</div>`;
+                let content = `<div class="name-badge badge-only ${bCls} ${fontClass}">${displayOcc}</div>`;
                 html += `<td ${rs} class="${cCls}">${content}</td>`;
             }
           }
