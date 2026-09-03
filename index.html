@@ -405,100 +405,186 @@
         .catch(err => { document.getElementById('table-container').innerHTML = `<p style="text-align:center; color:red;">שגיאת שרת.</p>`; });
     }
 
+    // =========================================================================
+    // ארכיטקטורה חדשה: 2-Pass Render עם מנגנון Occupancy Matrix
+    // =========================================================================
     function renderTable(data) {
       let container = document.getElementById('table-container');
       if (!data || !data.rooms || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
 
-      let tzfiraRooms = data.rooms.filter(r => r.includes('הצפירה'));
-      let tzfiraCount = tzfiraRooms.length;
-      let firstTzfiraRoom = tzfiraRooms[0];
+      const rooms = data.rooms;
+      const timeRows = data.timeRows;
+      const numRows = timeRows.length;
+      const numCols = rooms.length;
 
-      let html = '<div class="table-wrapper"><table><thead><tr><th class="time-col">שעה</th>';
-      data.rooms.forEach(r => { html += `<th class="${r.includes('הצפירה')?'th-tzfira':'th-keren'}">${r}</th>`; });
-      html += '</tr></thead><tbody>';
+      // --- שלב 1: איפוס מפת הפריסה (Occupancy Grid) ---
+      const grid = Array.from({ length: numRows }, () => Array(numCols).fill(null));
 
-      let sundayMeetingRows = [];
-      if (data.isSunday && !data.isMeetingReleased) {
-        sundayMeetingRows = data.timeRows.filter(r => r.time >= '10:00' && r.time < '12:00');
+      for (let r = 0; r < numRows; r++) {
+        for (let c = 0; c < numCols; c++) {
+          const roomName = rooms[c];
+          grid[r][c] = {
+            type: 'NORMAL',
+            rowspan: 1,
+            colspan: 1,
+            cellData: timeRows[r].cells[roomName] || { status: 'unavailable', occupant: 'לא זמין' },
+            roomName: roomName
+          };
+        }
       }
 
-      data.timeRows.forEach(row => {
-        let t = row.time;
+      // --- שלב 2: החלת חוקי המיזוג על הגריד הלוגי ---
 
-        if (data.isSunday && !data.isMeetingReleased && t >= '10:00' && t < '12:00') {
-          if (sundayMeetingRows.length > 0 && t === sundayMeetingRows[0].time) {
-            html += `<tr><td class="time-col">${t}</td><td colspan="${data.rooms.length}" rowspan="${sundayMeetingRows.length}" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-x btn-x-turq" style="position:absolute; left:6px; top:6px;" onclick="event.stopPropagation(); toggleStaffMeeting('Released')">&#10005;</button>` : ''}</td></tr>`;
-          } else {
-            html += `<tr><td class="time-col">${t}</td></tr>`;
+      // חוק 1: ישיבת צוות (יום ראשון 10:00 - 12:00)
+      if (data.isSunday && !data.isMeetingReleased) {
+        const meetingRowIndices = [];
+        for (let r = 0; r < numRows; r++) {
+          if (timeRows[r].time >= '10:00' && timeRows[r].time < '12:00') {
+            meetingRowIndices.push(r);
           }
-          return;
         }
+        if (meetingRowIndices.length > 0) {
+          const rStart = meetingRowIndices[0];
+          const mRowCount = meetingRowIndices.length;
 
-        let rCls = (t === '15:00' || t === '15:30') ? 'row-half-hour' : '';
+          grid[rStart][0] = { type: 'MEETING', rowspan: mRowCount, colspan: numCols };
+
+          for (let i = 0; i < mRowCount; i++) {
+            const r = rStart + i;
+            for (let c = 0; c < numCols; c++) {
+              if (r === rStart && c === 0) continue;
+              grid[r][c] = { type: 'COVERED' };
+            }
+          }
+        }
+      }
+
+      // חוק 2: חדרי קרן היסוד ב-15:00 (מיזוג אינדקסי מול השורה הבאה)
+      const r15Index = timeRows.findIndex(r => r.time === '15:00');
+      if (r15Index !== -1 && r15Index + 1 < numRows) {
+        for (let c = 0; c < numCols; c++) {
+          if (rooms[c].includes('קרן') && grid[r15Index][c].type === 'NORMAL') {
+            grid[r15Index][c].rowspan = 2;
+            grid[r15Index + 1][c] = { type: 'COVERED' };
+          }
+        }
+      }
+
+      // חוק 3: הצפירה סגור (שעות > 15:30)
+      const tzfiraColIndices = [];
+      rooms.forEach((rName, idx) => { if (rName.includes('הצפירה')) tzfiraColIndices.push(idx); });
+
+      if (tzfiraColIndices.length > 0) {
+        const r16Index = timeRows.findIndex(r => r.time > '15:30');
+        if (r16Index !== -1) {
+          const closedRowCount = numRows - r16Index;
+          const firstTzfiraCol = tzfiraColIndices[0];
+          const tzfiraCount = tzfiraColIndices.length;
+
+          grid[r16Index][firstTzfiraCol] = { type: 'TZFIRA_CLOSED', rowspan: closedRowCount, colspan: tzfiraCount };
+
+          for (let r = r16Index; r < numRows; r++) {
+            for (let i = 0; i < tzfiraCount; i++) {
+              const c = tzfiraColIndices[i];
+              if (r === r16Index && c === firstTzfiraCol) continue;
+              grid[r][c] = { type: 'COVERED' };
+            }
+          }
+        }
+      }
+
+      // --- שלב 3: בדיקת תקינות (Validation Check) ---
+      for (let r = 0; r < numRows; r++) {
+        let coveredColsInRow = 0;
+        for (let c = 0; c < numCols; c++) {
+          const node = grid[r][c];
+          if (node.type === 'COVERED') {
+            coveredColsInRow += 1;
+          } else {
+            coveredColsInRow += (node.colspan || 1);
+          }
+        }
+        if (coveredColsInRow !== numCols) {
+          console.error(`🚨 LAYOUT_ERROR [שורה ${r} / שעה ${timeRows[r].time}]: מצופה ${numCols} עמודות, התקבל ${coveredColsInRow}`);
+        }
+      }
+
+      // --- שלב 4: הפקת HTML טהורה (Render Phase בלבד) ---
+      let html = '<div class="table-wrapper"><table><thead><tr><th class="time-col">שעה</th>';
+      rooms.forEach(r => {
+        html += `<th class="${r.includes('הצפירה')?'th-tzfira':'th-keren'}">${r}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      for (let r = 0; r < numRows; r++) {
+        const t = timeRows[r].time;
+        const rCls = (t === '15:00' || t === '15:30') ? 'row-half-hour' : '';
         html += `<tr class="${rCls}"><td class="time-col">${t}</td>`;
 
-        data.rooms.forEach(room => {
-          let isK = room.includes('קרן');
-          let isT = room.includes('הצפירה');
+        for (let c = 0; c < numCols; c++) {
+          const node = grid[r][c];
 
-          // דילוג על קרן היסוד ב-15:30 מפני שקיים rowspan=2 החל מ-15:00
-          if (isK && t === '15:30') return;
+          if (node.type === 'COVERED') continue; // התא תפוס ע"י rowspan/colspan קודם
 
-          // הצפירה סגור אחרי 15:30 - יצירת תא ממוזג יחיד בדיוק בעמודה הראשונה של הצפירה
-          if (isT && t > '15:30') {
-            if (t === '16:00' && room === firstTzfiraRoom) {
-              html += `<td colspan="${tzfiraCount}" rowspan="4" class="cell-unavailable">סגור</td>`;
-            }
-            return;
+          if (node.type === 'MEETING') {
+            html += `<td colspan="${node.colspan}" rowspan="${node.rowspan}" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-x btn-x-turq" style="position:absolute; left:6px; top:6px;" onclick="event.stopPropagation(); toggleStaffMeeting('Released')">&#10005;</button>` : ''}</td>`;
+            continue;
           }
 
-          let cell = row.cells[room] || { status: 'unavailable', occupant: 'לא זמין' };
-          let isMine = checkIsMine(cell.occupant);
-          let cCls = isT ? 'td-tzfira' : 'td-keren';
-          
-          let rs = (isK && t === '15:00') ? 'rowspan="2"' : '';
-
-          if (cell.status === 'free') {
-            html += `<td ${rs} class="${cCls}">
-              <div class="cell-free-container">
-                <span class="cell-free-text">פנוי</span>
-                <button class="btn-book-plus" onclick="initBook('${t}', '${room}')">+</button>
-              </div>
-            </td>`;
-          } else if (cell.status === 'unavailable') {
-            html += `<td ${rs} class="cell-unavailable">${cell.occupant}</td>`;
-          } else {
-            let bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
-            let displayOcc = getShortName(cell.occupant); 
-            
-            let fontClass = '';
-            if (displayOcc.length > 12) {
-              fontClass = 'text-xs-long';
-            } else if (displayOcc.length > 8) {
-              fontClass = 'text-sm-long';
-            }
-            
-            let hasBtn = isMine || isAdmin;
-            let textClass = hasBtn ? 'badge-text badge-text-with-btn' : 'badge-text';
-
-            let content = `<div class="occupied-container">`;
-            content += `<div class="name-badge badge-full ${bCls} ${fontClass}">`;
-            content += `<span class="${textClass}">${displayOcc}</span>`;
-            
-            if (isMine) {
-                content += `<button class="btn-release-x btn-x-red" onclick="event.stopPropagation(); releaseRoom('${t}', '${room}')">&#10005;</button>`;
-            } else if (isAdmin) {
-                content += `<button class="btn-release-x btn-x-turq" onclick="event.stopPropagation(); releaseRoomAdmin('${t}', '${room}', '${cell.occupant}')">&#10005;</button>`;
-            }
-            
-            content += `</div></div>`;
-            html += `<td ${rs} class="${cCls}">${content}</td>`;
+          if (node.type === 'TZFIRA_CLOSED') {
+            html += `<td colspan="${node.colspan}" rowspan="${node.rowspan}" class="cell-unavailable">סגור</td>`;
+            continue;
           }
-        });
 
+          if (node.type === 'NORMAL') {
+            const roomName = node.roomName;
+            const isT = roomName.includes('הצפירה');
+            const cCls = isT ? 'td-tzfira' : 'td-keren';
+            const cell = node.cellData;
+            const rsAttr = node.rowspan > 1 ? `rowspan="${node.rowspan}"` : '';
+
+            if (cell.status === 'free') {
+              html += `<td ${rsAttr} class="${cCls}">
+                <div class="cell-free-container">
+                  <span class="cell-free-text">פנוי</span>
+                  <button class="btn-book-plus" onclick="initBook('${t}', '${roomName}')">+</button>
+                </div>
+              </td>`;
+            } else if (cell.status === 'unavailable') {
+              html += `<td ${rsAttr} class="cell-unavailable">${cell.occupant}</td>`;
+            } else {
+              const isMine = checkIsMine(cell.occupant);
+              const bCls = isMine ? 'badge-mine' : (isT ? 'badge-tzfira' : 'badge-keren');
+              const displayOcc = getShortName(cell.occupant); 
+              
+              let fontClass = '';
+              if (displayOcc.length > 12) {
+                fontClass = 'text-xs-long';
+              } else if (displayOcc.length > 8) {
+                fontClass = 'text-sm-long';
+              }
+              
+              const hasBtn = isMine || isAdmin;
+              const textClass = hasBtn ? 'badge-text badge-text-with-btn' : 'badge-text';
+
+              let content = `<div class="occupied-container">`;
+              content += `<div class="name-badge badge-full ${bCls} ${fontClass}">`;
+              content += `<span class="${textClass}">${displayOcc}</span>`;
+              
+              if (isMine) {
+                  content += `<button class="btn-release-x btn-x-red" onclick="event.stopPropagation(); releaseRoom('${t}', '${roomName}')">&#10005;</button>`;
+              } else if (isAdmin) {
+                  content += `<button class="btn-release-x btn-x-turq" onclick="event.stopPropagation(); releaseRoomAdmin('${t}', '${roomName}', '${cell.occupant}')">&#10005;</button>`;
+              }
+              
+              content += `</div></div>`;
+              html += `<td ${rsAttr} class="${cCls}">${content}</td>`;
+            }
+          }
+        }
         html += '</tr>';
-      });
-      container.innerHTML = html + '</tbody></table></div>';
+      }
+      container.innerHTML = html + '</tbody></table>div>';
     }
 
     function checkIsMine(occ) { return occ && currentUser && occ.includes(currentUser.split(" ")[0]); }
