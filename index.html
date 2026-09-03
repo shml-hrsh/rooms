@@ -108,6 +108,23 @@
     .modal-radio-group label { font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
     .btn-cancel { background: #64748b; }
+
+    @media (min-width: 768px) {
+      .container { max-width: 1050px; margin: 20px auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 12px; border: 1px solid #e2e8f0; }
+      table { font-size: 12px; }
+      th, td { min-width: 110px; height: 48px; max-height: 48px; padding: 4px; }
+      th.time-col, td.time-col { min-width: 65px; width: 65px; font-size: 13px; }
+      .nav-btn-sm { font-size: 12px; padding: 8px 14px; }
+      .day-tab-name { font-size: 13px; }
+      .day-tab-date { font-size: 11px; }
+      .date-title { font-size: 16px; }
+      .day-step-btn { font-size: 12px; padding: 8px 14px; }
+      .btn-book-plus { height: 26px; width: 26px; font-size: 18px; }
+      .badge-full { font-size: 13px; }
+      .user-header { font-size: 14px; padding: 6px 12px; }
+      .app-brand-header h2 { font-size: 24px; }
+      .app-logo { max-height: 75px; }
+    }
   </style>
 </head>
 <body>
@@ -176,7 +193,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzp2flOVU6GmIAwfGCnY1NLiAlI5cFhPiirql0B6HjT7SkCwke4XHpUi0TSi6ZhTpiB7A/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwsI5jlohdgdl4aCjsIXMjliLckiFTM9ov8kEiIZO40DIxSWygZEEwMcnwLkfNYJYSAVw/exec"; 
     const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 
     async function fetchGet(params) {
@@ -221,7 +238,6 @@
           if (parsed.timestamp && (Date.now() - parsed.timestamp < CACHE_TTL_MS) && parsed.employees) {
             cacheValid = true;
             globalUsersList = parsed.employees;
-            console.log("⚡ נמצא זיכרון מקומי בתוקף עבור רשימת עובדים.");
           }
         } catch(e) { cacheValid = false; }
       }
@@ -236,8 +252,6 @@
           document.getElementById('login-screen').style.display = 'block';
         }
       } else {
-        console.log("🔄 זיכרון לא קיים או פג תוקף -> מפעיל טעינה מקבילה לשרת");
-        
         if (currentUser) {
           document.getElementById('login-screen').style.display = 'none';
           document.getElementById('main-app').style.display = 'block';
@@ -383,16 +397,8 @@
       document.getElementById('date-display').innerText = `${dName}, ${dStr}`;
       document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלה...</div>';
 
-      const t0 = performance.now();
       fetchGet({ action: 'getDailyData', dateStr: dStr, dayName: dName })
         .then(data => {
-            const t1 = performance.now();
-            const browserTotalMs = Math.round(t1 - t0);
-            const serverTotalMs = data.serverTotalMs || 0;
-            const wrapperMs = browserTotalMs - serverTotalMs;
-            
-            console.log(`📊 [getDailyData] דפדפן: ${browserTotalMs}ms | שרת: ${serverTotalMs}ms | מעטפת/רשת: ${wrapperMs}ms`);
-
             window.currentDailyData = data;
             renderTable(data);
         })
@@ -408,18 +414,22 @@
       data.rooms.forEach(r => { html += `<th class="${r.includes('הצפירה')?'th-tzfira':'th-keren'}">${r}</th>`; });
       html += '</tr></thead><tbody>';
 
+      let sundayMeetingRows = [];
+      if (data.isSunday && !data.isMeetingReleased) {
+        sundayMeetingRows = data.timeRows.filter(r => r.time >= '10:00' && r.time < '12:00');
+      }
+
       let rendered16Block = false;
       data.timeRows.forEach(row => {
         let t = row.time;
-        if (data.isSunday && !data.isMeetingReleased) {
-          if (t === '10:00') {
-            html += `<tr><td class="time-col">10:00</td><td colspan="${data.rooms.length}" rowspan="2" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-x btn-x-turq" style="position:absolute; left:6px; top:6px;" onclick="event.stopPropagation(); toggleStaffMeeting('Released')">&#10005;</button>` : ''}</td></tr>`; 
-            return;
+
+        if (data.isSunday && !data.isMeetingReleased && t >= '10:00' && t < '12:00') {
+          if (sundayMeetingRows.length > 0 && t === sundayMeetingRows[0].time) {
+            html += `<tr><td class="time-col">${t}</td><td colspan="${data.rooms.length}" rowspan="${sundayMeetingRows.length}" class="cell-staff-meeting">ישיבת צוות ${isAdmin ? `<br><button class="btn-release-x btn-x-turq" style="position:absolute; left:6px; top:6px;" onclick="event.stopPropagation(); toggleStaffMeeting('Released')">&#10005;</button>` : ''}</td></tr>`;
+          } else {
+            html += `<tr><td class="time-col">${t}</td></tr>`;
           }
-          if (t === '11:00') {
-            html += `<tr><td class="time-col">11:00</td></tr>`; 
-            return;
-          }
+          return;
         }
 
         let rCls = (t === '15:00' || t === '15:30') ? 'row-half-hour' : '';
