@@ -176,29 +176,23 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby4hPC4cSMGy_781LZc-KPZoNgGLQ1Mm-XkFbU_NhosQ1Zl6XXdP7E5v7vzHMlklErVBQ/exec"; 
-    const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // תוקף לזיכרון עובדים מקומי: 12 שעות
+    const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 
     async function fetchGet(params) {
-      const t0 = performance.now(); 
       const query = new URLSearchParams(params).toString();
       const res = await fetch(`${API_URL}?${query}`);
       const data = await res.json();
-      const t1 = performance.now(); 
-      console.log(`⏱️ זמן קריאה לשרת עבור [${params.action}]: ${(t1 - t0).toFixed(0)} מילי-שניות`);
       if (data.error) throw new Error(data.error);
       return data;
     }
 
     async function fetchPost(payload) {
-      const t0 = performance.now();
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      const t1 = performance.now();
-      console.log(`⏱️ זמן פעולת כתיבה לשרת [${payload.action}]: ${(t1 - t0).toFixed(0)} מילי-שניות`);
       if (data.error) throw new Error(data.error);
       return data;
     }
@@ -216,7 +210,6 @@
     let pendingBookRoom = "";
     window.currentDailyData = null;
 
-    // --- מערכת האצה מתקדמת: TTL Cache + טעינה במקביל במידת הצורך ---
     window.onload = async function() {
       const rawCache = localStorage.getItem('roomAppEmployeesCache_v2');
       let cacheValid = false;
@@ -233,7 +226,6 @@
       }
 
       if (cacheValid) {
-        // עובדים קיימים בזיכרון המקומי בתוקף -> טוענים UI ומתחילים מיד את טעינת החדרים
         buildShortNamesMap();
         populateUsersDropdowns();
         
@@ -243,11 +235,9 @@
           document.getElementById('login-screen').style.display = 'block';
         }
       } else {
-        // אין זיכרון בתוקף -> מפעילים טעינה במקביל (Promise.all)
         console.log("🔄 זיכרון לא קיים או פג תוקף -> מפעיל טעינה מקבילה לשרת");
         
         if (currentUser) {
-          // מציגים מסך ראשי כדי שטעינת החדרים תתחיל במקביל
           document.getElementById('login-screen').style.display = 'none';
           document.getElementById('main-app').style.display = 'block';
           document.getElementById('admin-indicator').style.display = isAdmin ? 'inline-block' : 'none';
@@ -265,7 +255,6 @@
               fetchGet({ action: 'getDailyData', dateStr: dStr, dayName: dName })
             ]);
 
-            // שמירת העובדים ב-Cache ל-12 השעות הבאות
             localStorage.setItem('roomAppEmployeesCache_v2', JSON.stringify({
               employees: empData.employees,
               timestamp: Date.now()
@@ -283,7 +272,6 @@
           }
 
         } else {
-          // משתמש אינו מחובר - טוענים עובדים בלבד למסך התחברות
           try {
             const empData = await fetchGet({ action: 'getEmployees' });
             localStorage.setItem('roomAppEmployeesCache_v2', JSON.stringify({
@@ -387,6 +375,7 @@
       }
     }
 
+    // --- הפונקציה המדודה (Server vs Browser) ---
     function loadDailyData() {
       renderDayTabs();
       let dStr = formatDate(currentDate);
@@ -394,8 +383,16 @@
       document.getElementById('date-display').innerText = `${dName}, ${dStr}`;
       document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלה...</div>';
 
+      const t0 = performance.now();
       fetchGet({ action: 'getDailyData', dateStr: dStr, dayName: dName })
         .then(data => {
+            const t1 = performance.now();
+            const browserTotalMs = Math.round(t1 - t0);
+            const serverTotalMs = data.serverTotalMs || 0;
+            const wrapperMs = browserTotalMs - serverTotalMs;
+            
+            console.log(`📊 [getDailyData] דפדפן: ${browserTotalMs}ms | שרת: ${serverTotalMs}ms | מעטפת/רשת: ${wrapperMs}ms`);
+
             window.currentDailyData = data;
             renderTable(data);
         })
@@ -403,8 +400,6 @@
     }
 
     function renderTable(data) {
-      const t0 = performance.now(); 
-
       let container = document.getElementById('table-container');
       if (!data || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
 
@@ -482,9 +477,6 @@
         html += '</tr>';
       });
       container.innerHTML = html + '</tbody></table></div>';
-      
-      const t1 = performance.now(); 
-      console.log(`⏱️ זמן ציור הטבלה בדפדפן: ${(t1 - t0).toFixed(0)} מילי-שניות`);
     }
 
     function checkIsMine(occ) { return occ && currentUser && occ.includes(currentUser.split(" ")[0]); }
