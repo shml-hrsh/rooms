@@ -407,9 +407,12 @@
 
     function renderTable(data) {
       let container = document.getElementById('table-container');
-      if (!data || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
+      if (!data || !data.rooms || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
 
-      let tzfiraCount = data.rooms.filter(r => r.includes('הצפירה')).length;
+      let tzfiraRooms = data.rooms.filter(r => r.includes('הצפירה'));
+      let tzfiraCount = tzfiraRooms.length;
+      let firstTzfiraRoom = tzfiraRooms[0];
+
       let html = '<div class="table-wrapper"><table><thead><tr><th class="time-col">שעה</th>';
       data.rooms.forEach(r => { html += `<th class="${r.includes('הצפירה')?'th-tzfira':'th-keren'}">${r}</th>`; });
       html += '</tr></thead><tbody>';
@@ -419,7 +422,6 @@
         sundayMeetingRows = data.timeRows.filter(r => r.time >= '10:00' && r.time < '12:00');
       }
 
-      let rendered16Block = false;
       data.timeRows.forEach(row => {
         let t = row.time;
 
@@ -436,9 +438,19 @@
         html += `<tr class="${rCls}"><td class="time-col">${t}</td>`;
 
         data.rooms.forEach(room => {
-          let isK = room.includes('קרן'); let isT = room.includes('הצפירה');
-          if (isK && t === '15:30') return; 
-          if (isT && t > '15:30') { if (!rendered16Block && t === '16:00') { html += `<td colspan="${tzfiraCount}" rowspan="4" class="cell-unavailable">סגור</td>`; } return; }
+          let isK = room.includes('קרן');
+          let isT = room.includes('הצפירה');
+
+          // דילוג על קרן היסוד ב-15:30 מפני שקיים rowspan=2 החל מ-15:00
+          if (isK && t === '15:30') return;
+
+          // הצפירה סגור אחרי 15:30 - יצירת תא ממוזג יחיד בדיוק בעמודה הראשונה של הצפירה
+          if (isT && t > '15:30') {
+            if (t === '16:00' && room === firstTzfiraRoom) {
+              html += `<td colspan="${tzfiraCount}" rowspan="4" class="cell-unavailable">סגור</td>`;
+            }
+            return;
+          }
 
           let cell = row.cells[room] || { status: 'unavailable', occupant: 'לא זמין' };
           let isMine = checkIsMine(cell.occupant);
@@ -483,7 +495,7 @@
             html += `<td ${rs} class="${cCls}">${content}</td>`;
           }
         });
-        if (t > '15:30') rendered16Block = true;
+
         html += '</tr>';
       });
       container.innerHTML = html + '</tbody></table></div>';
