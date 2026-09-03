@@ -176,18 +176,15 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby4hPC4cSMGy_781LZc-KPZoNgGLQ1Mm-XkFbU_NhosQ1Zl6XXdP7E5v7vzHMlklErVBQ/exec"; 
+    const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // תוקף לזיכרון עובדים מקומי: 12 שעות
 
-    // ---- תוספת שעוני עצר פה ----
     async function fetchGet(params) {
-      const t0 = performance.now(); // תחילת המדידה
-      
+      const t0 = performance.now(); 
       const query = new URLSearchParams(params).toString();
       const res = await fetch(`${API_URL}?${query}`);
       const data = await res.json();
-      
-      const t1 = performance.now(); // סוף המדידה
+      const t1 = performance.now(); 
       console.log(`⏱️ זמן קריאה לשרת עבור [${params.action}]: ${(t1 - t0).toFixed(0)} מילי-שניות`);
-      
       if (data.error) throw new Error(data.error);
       return data;
     }
@@ -217,12 +214,26 @@
 
     let pendingBookTime = "";
     let pendingBookRoom = "";
-    
     window.currentDailyData = null;
 
-    window.onload = function() {
-      fetchGet({ action: 'getEmployees' }).then(data => {
-        globalUsersList = data.employees;
+    // --- מערכת האצה מתקדמת: TTL Cache + טעינה במקביל במידת הצורך ---
+    window.onload = async function() {
+      const rawCache = localStorage.getItem('roomAppEmployeesCache_v2');
+      let cacheValid = false;
+
+      if (rawCache) {
+        try {
+          const parsed = JSON.parse(rawCache);
+          if (parsed.timestamp && (Date.now() - parsed.timestamp < CACHE_TTL_MS) && parsed.employees) {
+            cacheValid = true;
+            globalUsersList = parsed.employees;
+            console.log("⚡ נמצא זיכרון מקומי בתוקף עבור רשימת עובדים.");
+          }
+        } catch(e) { cacheValid = false; }
+      }
+
+      if (cacheValid) {
+        // עובדים קיימים בזיכרון המקומי בתוקף -> טוענים UI ומתחילים מיד את טעינת החדרים
         buildShortNamesMap();
         populateUsersDropdowns();
         
@@ -231,7 +242,61 @@
         } else {
           document.getElementById('login-screen').style.display = 'block';
         }
-      }).catch(err => console.error(err));
+      } else {
+        // אין זיכרון בתוקף -> מפעילים טעינה במקביל (Promise.all)
+        console.log("🔄 זיכרון לא קיים או פג תוקף -> מפעיל טעינה מקבילה לשרת");
+        
+        if (currentUser) {
+          // מציגים מסך ראשי כדי שטעינת החדרים תתחיל במקביל
+          document.getElementById('login-screen').style.display = 'none';
+          document.getElementById('main-app').style.display = 'block';
+          document.getElementById('admin-indicator').style.display = isAdmin ? 'inline-block' : 'none';
+          document.getElementById('admin-login-btn').innerText = isAdmin ? 'יציאה 🔓' : 'ניהול 🔒';
+          
+          let dStr = formatDate(currentDate);
+          let dName = sheetDaysHebrew[currentDate.getDay()];
+          renderDayTabs();
+          document.getElementById('date-display').innerText = `${dName}, ${dStr}`;
+          document.getElementById('table-container').innerHTML = '<div class="loader">טוען טבלה...</div>';
+
+          try {
+            const [empData, dailyData] = await Promise.all([
+              fetchGet({ action: 'getEmployees' }),
+              fetchGet({ action: 'getDailyData', dateStr: dStr, dayName: dName })
+            ]);
+
+            // שמירת העובדים ב-Cache ל-12 השעות הבאות
+            localStorage.setItem('roomAppEmployeesCache_v2', JSON.stringify({
+              employees: empData.employees,
+              timestamp: Date.now()
+            }));
+
+            globalUsersList = empData.employees;
+            buildShortNamesMap();
+            populateUsersDropdowns();
+            document.getElementById('current-user-name').innerText = getShortName(currentUser);
+
+            window.currentDailyData = dailyData;
+            renderTable(dailyData);
+          } catch(err) {
+            document.getElementById('table-container').innerHTML = `<p style="text-align:center; color:red;">שגיאת שרת.</p>`;
+          }
+
+        } else {
+          // משתמש אינו מחובר - טוענים עובדים בלבד למסך התחברות
+          try {
+            const empData = await fetchGet({ action: 'getEmployees' });
+            localStorage.setItem('roomAppEmployeesCache_v2', JSON.stringify({
+              employees: empData.employees,
+              timestamp: Date.now()
+            }));
+            globalUsersList = empData.employees;
+            buildShortNamesMap();
+            populateUsersDropdowns();
+            document.getElementById('login-screen').style.display = 'block';
+          } catch(err) { console.error(err); }
+        }
+      }
     };
 
     function buildShortNamesMap() {
@@ -338,7 +403,7 @@
     }
 
     function renderTable(data) {
-      const t0 = performance.now(); // תחילת מדידת זמן ציור הטבלה
+      const t0 = performance.now(); 
 
       let container = document.getElementById('table-container');
       if (!data || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
@@ -418,7 +483,7 @@
       });
       container.innerHTML = html + '</tbody></table></div>';
       
-      const t1 = performance.now(); // סוף מדידת זמן הציור
+      const t1 = performance.now(); 
       console.log(`⏱️ זמן ציור הטבלה בדפדפן: ${(t1 - t0).toFixed(0)} מילי-שניות`);
     }
 
