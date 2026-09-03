@@ -177,21 +177,31 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby4hPC4cSMGy_781LZc-KPZoNgGLQ1Mm-XkFbU_NhosQ1Zl6XXdP7E5v7vzHMlklErVBQ/exec"; 
 
+    // ---- תוספת שעוני עצר פה ----
     async function fetchGet(params) {
+      const t0 = performance.now(); // תחילת המדידה
+      
       const query = new URLSearchParams(params).toString();
       const res = await fetch(`${API_URL}?${query}`);
       const data = await res.json();
+      
+      const t1 = performance.now(); // סוף המדידה
+      console.log(`⏱️ זמן קריאה לשרת עבור [${params.action}]: ${(t1 - t0).toFixed(0)} מילי-שניות`);
+      
       if (data.error) throw new Error(data.error);
       return data;
     }
 
     async function fetchPost(payload) {
+      const t0 = performance.now();
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
+      const t1 = performance.now();
+      console.log(`⏱️ זמן פעולת כתיבה לשרת [${payload.action}]: ${(t1 - t0).toFixed(0)} מילי-שניות`);
       if (data.error) throw new Error(data.error);
       return data;
     }
@@ -328,6 +338,8 @@
     }
 
     function renderTable(data) {
+      const t0 = performance.now(); // תחילת מדידת זמן ציור הטבלה
+
       let container = document.getElementById('table-container');
       if (!data || !data.rooms.length) { container.innerHTML = "<p style='text-align:center;'>אין פעילות.</p>"; return; }
 
@@ -345,7 +357,6 @@
             return;
           }
           if (t === '11:00') {
-            // התיקון: יצירת שורת שעה בלבד ל-11:00 כדי לעצור את ישיבת הצוות ולא לקטוע את 12:00
             html += `<tr><td class="time-col">11:00</td></tr>`; 
             return;
           }
@@ -406,6 +417,9 @@
         html += '</tr>';
       });
       container.innerHTML = html + '</tbody></table></div>';
+      
+      const t1 = performance.now(); // סוף מדידת זמן הציור
+      console.log(`⏱️ זמן ציור הטבלה בדפדפן: ${(t1 - t0).toFixed(0)} מילי-שניות`);
     }
 
     function checkIsMine(occ) { return occ && currentUser && occ.includes(currentUser.split(" ")[0]); }
